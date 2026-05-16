@@ -2300,9 +2300,22 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
                     document.getElementById('feedback-icon').textContent = isPass ? '✅' : '❌';
                     document.getElementById('feedback-text').textContent = 'AI评分：' + score + '/' + qMax + '分';
                 } else {
-                    document.getElementById('feedback').className = 'feedback show';
-                    document.getElementById('feedback-icon').textContent = '📝';
-                    document.getElementById('feedback-text').textContent = '参考答案已展示';
+                    // 非考试模式：恢复AI评分结果
+                    const answeredInfo = answeredMap.get(q.id);
+                    if (answeredInfo && answeredInfo.score !== undefined) {
+                        const aMax = answeredInfo.maxScore || 100;
+                        const aScore = answeredInfo.score;
+                        const aRate = aMax > 0 ? aScore / aMax : 0;
+                        const aPass = aRate >= 0.6;
+                        document.getElementById('feedback').className = 'feedback show ' + (aPass ? 'correct' : 'wrong');
+                        document.getElementById('feedback-icon').textContent = aPass ? '✅' : '❌';
+                        document.getElementById('feedback-text').textContent = 
+                            'AI评分：' + aScore + '/' + aMax + '分' + (answeredInfo.aiFeedback ? ' · ' + answeredInfo.aiFeedback : '');
+                    } else {
+                        document.getElementById('feedback').className = 'feedback show';
+                        document.getElementById('feedback-icon').textContent = '📝';
+                        document.getElementById('feedback-text').textContent = '参考答案已展示';
+                    }
                 }
                 
                 document.getElementById('submit-btn').style.display = 'none';
@@ -2352,44 +2365,82 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
                 return;
             }
             
+            // 非考试模式：调用AI评分
+            submitNonExamAnswer(q, userAns);
+        }
+
+        // 非考试模式AI评分
+        async function submitNonExamAnswer(q, userAns) {
+            const maxScore = 100; // 100分制
+
+            // 禁用输入，显示加载状态
+            document.getElementById('user-answer').style.display = 'none';
+            document.getElementById('submit-btn').style.display = 'none';
+
+            // 显示AI评分loading
+            document.getElementById('feedback').classList.add('show');
+            document.getElementById('feedback').className = 'feedback show';
+            document.getElementById('feedback-icon').innerHTML = '<div class="ai-scoring-loading"><div class="spinner"></div><p>AI评分中...</p></div>';
+            document.getElementById('feedback-text').textContent = '';
+
+            let score = 0;
+            let aiFeedback = '';
+
+            try {
+                const result = await aiScoreQuestion(q, userAns, maxScore);
+                score = result.score;
+                aiFeedback = result.feedback || '';
+            } catch (e) {
+                console.error('AI评分失败，使用默认评分:', e);
+                score = 0;
+                aiFeedback = 'AI评分失败，请参考标准答案自行评分';
+            }
+
+            // 分数钳位
+            score = Math.floor(Number(score));
+            score = Math.min(score, maxScore);
+            score = Math.max(score, 0);
+
+            const scoreRate = maxScore > 0 ? score / maxScore : 0;
+
             // 保存答题记录
             const data = getData();
             if (!data.stats) data.stats = {};
             if (!data.stats[q.id]) data.stats[q.id] = { answered: false, correct: false };
             data.stats[q.id].answered = true;
-            
-            // 对于简答题/案例分析等，默认标记为已答（不自动评判对错）
-            data.stats[q.id].correct = true; // 默认正确，用户可自行判断
-            
-            // 如果今日计数器未初始化
+            data.stats[q.id].correct = scoreRate >= 0.6;
             if (typeof data.todayAnswered === 'undefined') data.todayAnswered = 0;
             data.todayAnswered++;
-            
-            // 保存数据
+
+            // 得分率低于60%自动加入错题本
+            if (scoreRate < 0.6) {
+                if (!data.wrongQuestions) data.wrongQuestions = [];
+                if (!data.wrongQuestions.includes(q.id)) {
+                    data.wrongQuestions.push(q.id);
+                }
+            }
             saveData(data);
-            
+
             // 显示参考答案
             document.getElementById('answer-text').textContent = q.answer;
             document.getElementById('answer-section').classList.add('show');
-            document.getElementById('user-answer').style.display = 'none';
+
+            // 显示AI评分结果
+            const isPass = scoreRate >= 0.6;
+            document.getElementById('feedback').className = 'feedback show ' + (isPass ? 'correct' : 'wrong');
+            document.getElementById('feedback-icon').textContent = isPass ? '✅' : '❌';
+            document.getElementById('feedback-text').textContent = 
+                'AI评分：' + score + '/' + maxScore + '分' + (aiFeedback ? ' · ' + aiFeedback : '');
+
+            // 保存到已答记录（含评分信息）
+            answeredMap.set(q.id, { userAnswer: userAns, score: score, maxScore: maxScore, aiFeedback: aiFeedback });
             
-            // 显示反馈（这里对于简答题类型，不自动评判对错）
-            document.getElementById('feedback').classList.add('show');
-            document.getElementById('feedback-icon').textContent = '📝';
-            document.getElementById('feedback-text').textContent = '参考答案已展示';
-            document.getElementById('feedback').className = 'feedback show';
-            
-            // 保存到已答记录
-            answeredMap.set(q.id, { userAnswer: userAns });
-            
-            // 更新按钮
-            document.getElementById('submit-btn').style.display = 'none';
+            // 更新导航按钮
             updateNavigationButtons();
-            // 非模拟考试模式显示重做按钮
-            if (currentMode !== 'exam') {
-                document.getElementById('redo-btn').style.display = 'block';
-            }
-            
+
+            // 非考试模式显示重做按钮
+            document.getElementById('redo-btn').style.display = 'block';
+
             // 更新统计
             updateStats();
             renderChapterList();
