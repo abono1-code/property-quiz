@@ -1890,7 +1890,7 @@ const chapters = [
                 body: JSON.stringify({
                     bot_id: COZE_BOT_ID,
                     user_id: 'exam_user_' + Date.now(),
-                    stream: false,
+                    stream: true,
                     auto_save_history: false,
                     additional_messages: [{
                         role: 'user',
@@ -1904,23 +1904,28 @@ const chapters = [
                 throw new Error('API请求失败: ' + response.status);
             }
 
-            var result = await response.json();
-
-            // 从Coze API响应中提取内容
+            // 解析SSE流式响应
             var content = '';
-            if (result.data && result.data.length > 0) {
-                for (var i = 0; i < result.data.length; i++) {
-                    var item = result.data[i];
-                    if (item.type === 'answer' || item.role === 'assistant') {
-                        content += item.content || '';
-                    }
-                }
-            }
-            if (!content && result.messages) {
-                for (var j = 0; j < result.messages.length; j++) {
-                    var msg = result.messages[j];
-                    if (msg.role === 'assistant' && msg.type === 'answer') {
-                        content += msg.content || '';
+            var reader = response.body.getReader();
+            var decoder = new TextDecoder();
+            var buffer = '';
+            while (true) {
+                var chunk = await reader.read();
+                if (chunk.done) break;
+                buffer += decoder.decode(chunk.value, { stream: true });
+                var lines = buffer.split('\n');
+                buffer = lines.pop();
+                for (var k = 0; k < lines.length; k++) {
+                    var line = lines[k].trim();
+                    if (line.startsWith('data:')) {
+                        var jsonStr = line.substring(5).trim();
+                        if (jsonStr === '[DONE]') continue;
+                        try {
+                            var event = JSON.parse(jsonStr);
+                            if (event.type === 'answer') {
+                                content += event.content || '';
+                            }
+                        } catch(e) {}
                     }
                 }
             }
