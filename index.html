@@ -147,6 +147,17 @@
             background: #e6f7ff;
         }
         
+        .btn-redo {
+            background: white;
+            color: #fa8c16;
+            border: 2px solid #fa8c16;
+        }
+        
+        .btn-redo:active {
+            background: #fff7e6;
+            transform: scale(0.98);
+        }
+        
         /* 章节列表 */
         .chapter-list {
             list-style: none;
@@ -774,6 +785,7 @@
         <div class="btn-group">
             <button class="btn btn-primary" id="submit-btn" onclick="submitAnswer()">提交答案</button>
             <button class="btn btn-outline" id="next-btn" onclick="nextQuestion()" style="display: none;">下一题</button>
+            <button class="btn btn-redo" id="redo-btn" onclick="redoCurrentQuestion()" style="display: none;">🔄 重做本题</button>
         </div>
     </div>
 
@@ -1768,6 +1780,7 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
         let userAnswer = '';
         let hasSubmitted = false;
         let isStarred = false;
+        let currentMode = 'chapter'; // 'daily', 'chapter', 'wrong'
 
         // 初始化
         function init() {
@@ -1909,6 +1922,7 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
 
         // 开始每日刷题
         function startDailyPractice() {
+            currentMode = 'daily';
             currentQuestions = [...questions].sort(() => Math.random() - 0.5);
             currentQuestionIndex = 0;
             showQuestion();
@@ -1916,6 +1930,7 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
 
         // 开始章节练习
         function startChapterPractice(chapterId) {
+            currentMode = 'chapter';
             currentQuestions = questions.filter(q => q.chapter === chapterId);
             currentQuestionIndex = 0;
             showQuestion();
@@ -1923,6 +1938,7 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
 
         // 开始错题练习
         function startWrongPractice(questionId) {
+            currentMode = 'wrong';
             const data = getData();
             const wrongIds = data.wrongQuestions || [];
             
@@ -1973,6 +1989,7 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             document.getElementById('feedback').classList.remove('show');
             document.getElementById('submit-btn').style.display = 'block';
             document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('redo-btn').style.display = 'none';
             
             // 显示答题页面
             document.getElementById('question-page').classList.add('active');
@@ -2027,11 +2044,39 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             // 更新按钮
             document.getElementById('submit-btn').style.display = 'none';
             document.getElementById('next-btn').style.display = 'block';
+            // 非模拟考试模式显示重做按钮
+            if (currentMode !== 'exam') {
+                document.getElementById('redo-btn').style.display = 'block';
+            }
             
             // 更新统计
             updateStats();
             renderChapterList();
             renderWrongList();
+        }
+
+        // 重做当前题目
+        function redoCurrentQuestion() {
+            const q = currentQuestions[currentQuestionIndex];
+            
+            // 重置作答状态
+            hasSubmitted = false;
+            userAnswer = '';
+            
+            // 恢复输入框
+            document.getElementById('user-answer').value = '';
+            document.getElementById('user-answer').style.display = 'block';
+            
+            // 隐藏参考答案和反馈
+            document.getElementById('answer-section').classList.remove('show');
+            document.getElementById('feedback').classList.remove('show');
+            
+            // 恢复按钮状态
+            document.getElementById('submit-btn').style.display = 'block';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('redo-btn').style.display = 'none';
+            
+            showToast('已重置，请重新作答');
         }
 
         // 下一题
