@@ -678,193 +678,6 @@
         .toast.show {
             opacity: 1;
         }
-
-        /* 模拟考试模式 */
-        .exam-progress-bar {
-            display: none;
-            background: #f0f0f0;
-            border-radius: 4px;
-            height: 6px;
-            margin: 8px 16px 0;
-            overflow: hidden;
-        }
-        .exam-progress-bar.show {
-            display: block;
-        }
-        .exam-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), #40a9ff);
-            border-radius: 4px;
-            transition: width 0.3s;
-        }
-        .exam-score-label {
-            display: none;
-            font-size: 13px;
-            color: var(--primary);
-            font-weight: 600;
-            margin-bottom: 8px;
-            padding: 6px 12px;
-            background: #e6f7ff;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .exam-score-label.show {
-            display: block;
-        }
-        /* 考试成绩单 */
-        .exam-transcript {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg);
-            z-index: 300;
-            display: none;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-        .exam-transcript.show {
-            display: flex;
-        }
-        .transcript-header {
-            background: linear-gradient(135deg, #1890ff, #40a9ff);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        .transcript-header h2 {
-            font-size: 22px;
-            margin-bottom: 8px;
-        }
-        .transcript-total {
-            font-size: 48px;
-            font-weight: 700;
-            margin: 10px 0;
-        }
-        .transcript-total small {
-            font-size: 20px;
-            font-weight: 400;
-            opacity: 0.8;
-        }
-        .transcript-body {
-            padding: 16px;
-            flex: 1;
-        }
-        .transcript-chapter {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-        .transcript-chapter-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border);
-        }
-        .transcript-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #f5f5f5;
-        }
-        .transcript-item:last-child {
-            border-bottom: none;
-        }
-        .transcript-item-index {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 600;
-            margin-right: 12px;
-            flex-shrink: 0;
-        }
-        .transcript-item-index.pass {
-            background: #f6ffed;
-            color: var(--success);
-        }
-        .transcript-item-index.fail {
-            background: #fff2f0;
-            color: var(--error);
-        }
-        .transcript-item-q {
-            flex: 1;
-            font-size: 14px;
-            color: var(--text);
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            margin-right: 12px;
-        }
-        .transcript-item-score {
-            font-size: 16px;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
-        .transcript-item-score.pass {
-            color: var(--success);
-        }
-        .transcript-item-score.fail {
-            color: var(--error);
-        }
-        .transcript-item-max {
-            font-size: 12px;
-            color: var(--text-light);
-            flex-shrink: 0;
-            margin-left: 2px;
-        }
-        .transcript-actions {
-            padding: 16px;
-            padding-bottom: max(16px, env(safe-area-inset-bottom));
-        }
-        .transcript-actions .btn {
-            margin-bottom: 12px;
-        }
-        .transcript-summary {
-            display: flex;
-            justify-content: space-around;
-            padding: 16px 0;
-            margin-bottom: 8px;
-        }
-        .transcript-summary-item {
-            text-align: center;
-        }
-        .transcript-summary-value {
-            font-size: 24px;
-            font-weight: 700;
-        }
-        .transcript-summary-label {
-            font-size: 12px;
-            color: var(--text-light);
-            margin-top: 4px;
-        }
-        .ai-scoring-loading {
-            text-align: center;
-            padding: 20px;
-        }
-        .ai-scoring-loading .spinner {
-            display: inline-block;
-            width: 32px;
-            height: 32px;
-            border: 3px solid #f0f0f0;
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .ai-scoring-loading p {
-            margin-top: 10px;
-            font-size: 14px;
-            color: var(--text-light);
-        }
     </style>
 </head>
 <body>
@@ -902,9 +715,6 @@
         </button>
         <button class="btn btn-outline" onclick="showPage('chapter')">
             📚 按章节练习
-        </button>
-        <button class="btn btn-primary" onclick="startExamPractice()" style="background: linear-gradient(135deg, #722ed1, #9254de);">
-            🎯 模拟考试
         </button>
     </div>
 
@@ -951,13 +761,9 @@
             <div class="question-progress" id="question-progress">1/10</div>
             <button class="star-btn" id="star-btn" onclick="toggleStar()">☆</button>
         </div>
-        <div class="exam-progress-bar" id="exam-progress-bar">
-            <div class="exam-progress-fill" id="exam-progress-fill"></div>
-        </div>
         
         <div class="question-content" id="question-content">
             <div class="question-type" id="question-type">简答题</div>
-            <div class="exam-score-label" id="exam-score-label">本题满分：6分</div>
             <div class="question-context" id="question-context" style="display: none;"></div>
             <div class="question-text" id="question-text"></div>
             
@@ -980,34 +786,6 @@
             <button class="btn btn-primary" id="submit-btn" onclick="submitAnswer()">提交答案</button>
             <button class="btn btn-outline" id="next-btn" onclick="nextQuestion()" style="display: none;">下一题</button>
             <button class="btn btn-redo" id="redo-btn" onclick="redoCurrentQuestion()" style="display: none;">🔄 重做本题</button>
-        </div>
-    </div>
-
-
-    <!-- 考试成绩单 -->
-    <div class="exam-transcript" id="exam-transcript">
-        <div class="transcript-header">
-            <h2>📋 模拟考试成绩单</h2>
-            <div class="transcript-total" id="transcript-total">0<small>/100</small></div>
-            <div class="transcript-summary">
-                <div class="transcript-summary-item">
-                    <div class="transcript-summary-value" id="transcript-pass-count" style="color:#f6ffed;">0</div>
-                    <div class="transcript-summary-label">及格题数</div>
-                </div>
-                <div class="transcript-summary-item">
-                    <div class="transcript-summary-value" id="transcript-fail-count" style="color:#fff2f0;">0</div>
-                    <div class="transcript-summary-label">不及格题数</div>
-                </div>
-                <div class="transcript-summary-item">
-                    <div class="transcript-summary-value" id="transcript-rate">0%</div>
-                    <div class="transcript-summary-label">得分率</div>
-                </div>
-            </div>
-        </div>
-        <div class="transcript-body" id="transcript-body"></div>
-        <div class="transcript-actions">
-            <button class="btn btn-primary" onclick="closeTranscript()">返回首页</button>
-            <button class="btn btn-outline" onclick="startExamPractice()">🔄 再考一次</button>
         </div>
     </div>
 
@@ -2002,20 +1780,7 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
         let userAnswer = '';
         let hasSubmitted = false;
         let isStarred = false;
-        let currentMode = 'chapter'; // 'daily', 'chapter', 'wrong', 'exam'
-
-        // 模拟考试配置
-        const EXAM_CHAPTERS = {
-            3: { count: 2, scores: [6, 6] },      // 第三章 12分
-            4: { count: 2, scores: [12, 13] },     // 第四章 25分
-            5: { count: 3, scores: [6, 6, 8] },    // 第五章 20分
-            6: { count: 3, scores: [10, 10, 10] }, // 第六章 30分
-            8: { count: 2, scores: [6, 7] }        // 第八章 13分
-        };
-        // 合计100分，12题
-        let examQuestionMaxScores = []; // 每题考试满分
-        let examScores = [];            // 每题实际得分
-        let examTotalMax = 0;           // 考试总分满分
+        let currentMode = 'chapter'; // 'daily', 'chapter', 'wrong'
 
         // 初始化
         function init() {
@@ -2072,7 +1837,7 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
                 }
             });
             
-            const rate = totalAnswered > 0 ? Math.floor((correctCount / totalAnswered) * 100) : 0;
+            const rate = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
             const todayAnswered = data.todayAnswered || 0;
             
             document.getElementById('stat-total').textContent = total;
@@ -2187,36 +1952,6 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             showQuestion();
         }
 
-        // 开始模拟考试
-        function startExamPractice() {
-            currentMode = 'exam';
-            examQuestionMaxScores = [];
-            examScores = [];
-            examTotalMax = 0;
-            currentQuestions = [];
-
-            // 按 EXAM_CHAPTERS 配置抽题
-            const chapterKeys = Object.keys(EXAM_CHAPTERS).map(Number).sort((a, b) => a - b);
-            chapterKeys.forEach(chNum => {
-                const cfg = EXAM_CHAPTERS[chNum];
-                const chId = 'ch' + chNum;
-                const chQuestions = questions.filter(q => q.chapter === chId);
-                // 随机抽取 count 道题
-                const shuffled = [...chQuestions].sort(() => Math.random() - 0.5);
-                const selected = shuffled.slice(0, cfg.count);
-                // 打乱选中题目顺序
-                selected.sort(() => Math.random() - 0.5);
-                selected.forEach((q, i) => {
-                    currentQuestions.push(q);
-                    examQuestionMaxScores.push(cfg.scores[i]);
-                });
-            });
-
-            examTotalMax = examQuestionMaxScores.reduce((a, b) => a + b, 0);
-            currentQuestionIndex = 0;
-            showQuestion();
-        }
-
         // 显示题目
         function showQuestion() {
             const q = currentQuestions[currentQuestionIndex];
@@ -2224,29 +1959,10 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             const data = getData();
             
             // 更新进度
-            if (currentMode === 'exam') {
-                const totalScore = examScores.reduce((a, b) => a + b, 0);
-                document.getElementById('question-progress').textContent = `第${currentQuestionIndex + 1}题/共${total}题 · 总分${totalScore}/${examTotalMax}`;
-            } else {
-                document.getElementById('question-progress').textContent = `${currentQuestionIndex + 1}/${total}`;
-            }
+            document.getElementById('question-progress').textContent = `${currentQuestionIndex + 1}/${total}`;
             
             // 更新题目类型
             document.getElementById('question-type').textContent = q.type;
-
-            // 模拟考试模式：显示进度条和本题满分
-            const examBar = document.getElementById('exam-progress-bar');
-            const examLabel = document.getElementById('exam-score-label');
-            if (currentMode === 'exam') {
-                examBar.classList.add('show');
-                examLabel.classList.add('show');
-                const progress = ((currentQuestionIndex + 1) / total) * 100;
-                document.getElementById('exam-progress-fill').style.width = progress + '%';
-                examLabel.textContent = '本题满分：' + examQuestionMaxScores[currentQuestionIndex] + '分';
-            } else {
-                examBar.classList.remove('show');
-                examLabel.classList.remove('show');
-            }
             
             // 更新题目内容
             document.getElementById('question-text').textContent = q.question;
@@ -2297,12 +2013,6 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             
             hasSubmitted = true;
             userAnswer = userAns;
-
-            // 模拟考试模式：调用AI评分
-            if (currentMode === 'exam') {
-                submitExamAnswer(q, userAns);
-                return;
-            }
             
             // 保存答题记录
             const data = getData();
@@ -2345,174 +2055,6 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             renderWrongList();
         }
 
-        // 模拟考试AI评分
-        async function submitExamAnswer(q, userAns) {
-            const qMax = examQuestionMaxScores[currentQuestionIndex];
-
-            // 禁用输入，显示加载状态
-            document.getElementById('user-answer').style.display = 'none';
-            document.getElementById('submit-btn').style.display = 'none';
-
-            // 显示AI评分loading
-            document.getElementById('feedback').classList.add('show');
-            document.getElementById('feedback').className = 'feedback show';
-            document.getElementById('feedback-icon').innerHTML = '<div class="ai-scoring-loading"><div class="spinner"></div><p>AI评分中...</p></div>';
-            document.getElementById('feedback-text').textContent = '';
-
-            let score = 0;
-            let aiFeedback = '';
-
-            try {
-                const result = await aiScoreQuestion(q, userAns, qMax);
-                score = result.score;
-                aiFeedback = result.feedback || '';
-            } catch (e) {
-                console.error('AI评分失败，使用默认评分:', e);
-                // AI评分失败时，给0分
-                score = 0;
-                aiFeedback = 'AI评分失败，请参考标准答案自行评分';
-            }
-
-            // 分数钳位
-            score = Math.floor(Number(score));
-            score = Math.min(score, qMax);
-            score = Math.max(score, 0);
-
-            examScores.push(score);
-
-            // 保存答题记录
-            const data = getData();
-            if (!data.stats) data.stats = {};
-            if (!data.stats[q.id]) data.stats[q.id] = { answered: false, correct: false };
-            data.stats[q.id].answered = true;
-            const scoreRate = qMax > 0 ? score / qMax : 0;
-            data.stats[q.id].correct = scoreRate >= 0.6;
-            if (typeof data.todayAnswered === 'undefined') data.todayAnswered = 0;
-            data.todayAnswered++;
-
-            // 得分率低于60%自动加入错题本
-            if (scoreRate < 0.6) {
-                if (!data.wrongQuestions) data.wrongQuestions = [];
-                if (!data.wrongQuestions.includes(q.id)) {
-                    data.wrongQuestions.push(q.id);
-                }
-            }
-            saveData(data);
-
-            // 显示参考答案
-            document.getElementById('answer-text').textContent = q.answer;
-            document.getElementById('answer-section').classList.add('show');
-
-            // 显示评分结果
-            const isPass = scoreRate >= 0.6;
-            document.getElementById('feedback').className = 'feedback show ' + (isPass ? 'correct' : 'wrong');
-            document.getElementById('feedback-icon').textContent = isPass ? '✅' : '❌';
-            document.getElementById('feedback-text').textContent = 
-                `AI评分：${score}/${qMax}分` + (aiFeedback ? ' · ' + aiFeedback : '');
-
-            // 更新按钮
-            document.getElementById('next-btn').style.display = 'block';
-
-            // 更新进度显示
-            const totalScore = examScores.reduce((a, b) => a + b, 0);
-            const total = currentQuestions.length;
-            document.getElementById('question-progress').textContent = 
-                `第${currentQuestionIndex + 1}题/共${total}题 · 总分${totalScore}/${examTotalMax}`;
-
-            updateStats();
-            renderChapterList();
-            renderWrongList();
-        }
-
-        // AI评分调用
-        async function aiScoreQuestion(q, userAns, maxScore) {
-            const COZE_API = 'https://api.coze.cn/v3/chat';
-            const COZE_TOKEN = 'pat_0mIoNSZLbFzfzxKH7B73ojGULZQefWyFiIbEeSmYxlmhmBTzXsiiebvcKktbF07c';
-            const COZE_BOT_ID = '7639707793037508642';
-
-            const prompt = `你是一位物业初级考试评分老师。请根据以下信息对考生的答案进行评分。
-
-【题目】${q.question}
-${q.context ? '【背景资料】' + q.context + '\n' : ''}
-【参考答案】${q.answer}
-【考生答案】${userAns}
-【本题满分】${maxScore}分
-
-评分要求：
-1. 严格按照${maxScore}分制评分，给出0到${maxScore}之间的整数分数
-2. 对比参考答案的要点，按得分点评分
-3. 如果考生答案涵盖大部分要点，给予较高分数；遗漏较多则扣分
-4. 简要说明扣分原因
-
-请严格按照以下JSON格式回复（不要有其他内容）：
-{"score": 分数, "feedback": "简要评语"}`;
-
-            const response = await fetch(COZE_API, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + COZE_TOKEN
-                },
-                body: JSON.stringify({
-                    bot_id: COZE_BOT_ID,
-                    user_id: 'exam_user_' + Date.now(),
-                    stream: false,
-                    auto_save_history: false,
-                    additional_messages: [{
-                        role: 'user',
-                        content: prompt,
-                        content_type: 'text'
-                    }]
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('API请求失败: ' + response.status);
-            }
-
-            const result = await response.json();
-            
-            // 从Coze API响应中提取内容
-            let content = '';
-            if (result.data && result.data.length > 0) {
-                // 非流式返回格式
-                for (const item of result.data) {
-                    if (item.type === 'answer' || item.role === 'assistant') {
-                        content += item.content || '';
-                    }
-                }
-            }
-            if (!content && result.messages) {
-                for (const msg of result.messages) {
-                    if (msg.role === 'assistant' && msg.type === 'answer') {
-                        content += msg.content || '';
-                    }
-                }
-            }
-
-            // 尝试解析JSON
-            try {
-                // 清理可能的markdown代码块标记
-                let cleaned = content.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
-                const parsed = JSON.parse(cleaned);
-                return {
-                    score: parseInt(parsed.score) || 0,
-                    feedback: parsed.feedback || ''
-                };
-            } catch (parseErr) {
-                // 尝试从文本中提取分数
-                const scoreMatch = content.match(/"score"\s*:\s*(\d+)/);
-                const feedbackMatch = content.match(/"feedback"\s*:\s*"([^"]*)"/);
-                if (scoreMatch) {
-                    return {
-                        score: parseInt(scoreMatch[1]) || 0,
-                        feedback: feedbackMatch ? feedbackMatch[1] : ''
-                    };
-                }
-                throw new Error('无法解析AI评分结果: ' + content);
-            }
-        }
-
         // 重做当前题目
         function redoCurrentQuestion() {
             const q = currentQuestions[currentQuestionIndex];
@@ -2542,76 +2084,12 @@ ${q.context ? '【背景资料】' + q.context + '\n' : ''}
             currentQuestionIndex++;
             
             if (currentQuestionIndex >= currentQuestions.length) {
-                if (currentMode === 'exam') {
-                    showExamTranscript();
-                } else {
-                    closeQuestion();
-                    showToast('恭喜完成练习！');
-                }
+                closeQuestion();
+                showToast('恭喜完成练习！');
                 return;
             }
             
             showQuestion();
-        }
-
-        // 显示考试成绩单
-        function showExamTranscript() {
-            const totalScore = examScores.reduce((a, b) => a + b, 0);
-            const scoreRate = examTotalMax > 0 ? Math.floor((totalScore / examTotalMax) * 100) : 0;
-            
-            // 关闭答题页面
-            document.getElementById('question-page').classList.remove('active');
-
-            // 设置总分
-            document.getElementById('transcript-total').innerHTML = totalScore + '<small>/' + examTotalMax + '</small>';
-            document.getElementById('transcript-rate').textContent = scoreRate + '%';
-
-            // 按章节遍历生成成绩单
-            let html = '';
-            let qIndex = 0;
-            const chapterKeys = Object.keys(EXAM_CHAPTERS).map(Number).sort((a, b) => a - b);
-            chapterKeys.forEach(chNum => {
-                const cfg = EXAM_CHAPTERS[chNum];
-                const chInfo = chapters.find(c => c.id === 'ch' + chNum);
-                html += '<div class="transcript-chapter">';
-                html += '<div class="transcript-chapter-title">' + (chInfo ? chInfo.name : '第' + chNum + '章') + '</div>';
-                for (let i = 0; i < cfg.count; i++) {
-                    if (qIndex >= examScores.length) break;
-                    const score = examScores[qIndex];
-                    const maxS = examQuestionMaxScores[qIndex];
-                    const rate = maxS > 0 ? score / maxS : 0;
-                    const isPass = rate >= 0.6;
-                    const q = currentQuestions[qIndex];
-                    html += '<div class="transcript-item">';
-                    html += '<div class="transcript-item-index ' + (isPass ? 'pass' : 'fail') + '">' + (qIndex + 1) + '</div>';
-                    html += '<div class="transcript-item-q">' + q.question.substring(0, 50) + (q.question.length > 50 ? '...' : '') + '</div>';
-                    html += '<div class="transcript-item-score ' + (isPass ? 'pass' : 'fail') + '">' + score + '</div>';
-                    html += '<div class="transcript-item-max">/' + maxS + '</div>';
-                    html += '</div>';
-                    qIndex++;
-                }
-                html += '</div>';
-            });
-            document.getElementById('transcript-body').innerHTML = html;
-
-            // 统计及格/不及格题数
-            let passCount = 0, failCount = 0;
-            examScores.forEach((s, i) => {
-                const maxS = examQuestionMaxScores[i];
-                const rate = maxS > 0 ? s / maxS : 0;
-                if (rate >= 0.6) passCount++;
-                else failCount++;
-            });
-            document.getElementById('transcript-pass-count').textContent = passCount;
-            document.getElementById('transcript-fail-count').textContent = failCount;
-
-            // 显示成绩单
-            document.getElementById('exam-transcript').classList.add('show');
-        }
-
-        // 关闭成绩单
-        function closeTranscript() {
-            document.getElementById('exam-transcript').classList.remove('show');
         }
 
         // 关闭答题页面
@@ -2666,7 +2144,7 @@ ${q.context ? '【背景资料】' + q.context + '\n' : ''}
                 const chQuestions = questions.filter(q => q.chapter === ch.id);
                 const answered = chQuestions.filter(q => stats[q.id] && stats[q.id].answered).length;
                 const correct = chQuestions.filter(q => stats[q.id] && stats[q.id].correct).length;
-                const rate = answered > 0 ? Math.floor((correct / answered) * 100) : 0;
+                const rate = answered > 0 ? Math.round((correct / answered) * 100) : 0;
                 
                 html += `
                     <li class="chapter-stat-item">
