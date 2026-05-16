@@ -2373,41 +2373,16 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
         async function submitNonExamAnswer(q, userAns) {
             const maxScore = 100; // 100分制
 
-            // 禁用输入
+            // 禁用输入，显示加载状态
             document.getElementById('user-answer').style.display = 'none';
             document.getElementById('submit-btn').style.display = 'none';
 
-            // 先立即显示参考答案和导航按钮（不等AI评分）
-            document.getElementById('answer-text').textContent = q.answer;
-            document.getElementById('answer-section').classList.add('show');
-            
-            // 显示AI评分loading提示
+            // 显示AI评分loading
             document.getElementById('feedback').classList.add('show');
             document.getElementById('feedback').className = 'feedback show';
             document.getElementById('feedback-icon').innerHTML = '<div class="ai-scoring-loading"><div class="spinner"></div><p>AI评分中...</p></div>';
             document.getElementById('feedback-text').textContent = '';
 
-            // 立即显示导航按钮和重做按钮
-            updateNavigationButtons();
-            document.getElementById('redo-btn').style.display = 'block';
-
-            // 保存答题记录（先标记为已答）
-            const data = getData();
-            if (!data.stats) data.stats = {};
-            if (!data.stats[q.id]) data.stats[q.id] = { answered: false, correct: false };
-            data.stats[q.id].answered = true;
-            if (typeof data.todayAnswered === 'undefined') data.todayAnswered = 0;
-            data.todayAnswered++;
-            saveData(data);
-
-            // 保存到已答记录
-            answeredMap.set(q.id, { userAnswer: userAns, score: 0, maxScore: maxScore, aiFeedback: '' });
-            
-            // 更新统计
-            updateStats();
-            renderChapterList();
-
-            // 异步AI评分（不阻塞界面）
             let score = 0;
             let aiFeedback = '';
 
@@ -2416,7 +2391,7 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
                 score = result.score;
                 aiFeedback = result.feedback || '';
             } catch (e) {
-                console.error('AI评分失败:', e);
+                console.error('AI评分失败，使用默认评分:', e);
                 score = 0;
                 aiFeedback = 'AI评分失败，请参考标准答案自行评分';
             }
@@ -2428,30 +2403,47 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
 
             const scoreRate = maxScore > 0 ? score / maxScore : 0;
 
-            // 更新答题记录
-            const data2 = getData();
-            data2.stats[q.id].correct = scoreRate >= 0.6;
+            // 保存答题记录
+            const data = getData();
+            if (!data.stats) data.stats = {};
+            if (!data.stats[q.id]) data.stats[q.id] = { answered: false, correct: false };
+            data.stats[q.id].answered = true;
+            data.stats[q.id].correct = scoreRate >= 0.6;
+            if (typeof data.todayAnswered === 'undefined') data.todayAnswered = 0;
+            data.todayAnswered++;
 
             // 得分率低于60%自动加入错题本
             if (scoreRate < 0.6) {
-                if (!data2.wrongQuestions) data2.wrongQuestions = [];
-                if (!data2.wrongQuestions.includes(q.id)) {
-                    data2.wrongQuestions.push(q.id);
+                if (!data.wrongQuestions) data.wrongQuestions = [];
+                if (!data.wrongQuestions.includes(q.id)) {
+                    data.wrongQuestions.push(q.id);
                 }
             }
-            saveData(data2);
+            saveData(data);
 
-            // 更新AI评分结果到界面
+            // 显示参考答案
+            document.getElementById('answer-text').textContent = q.answer;
+            document.getElementById('answer-section').classList.add('show');
+
+            // 显示AI评分结果
             const isPass = scoreRate >= 0.6;
             document.getElementById('feedback').className = 'feedback show ' + (isPass ? 'correct' : 'wrong');
             document.getElementById('feedback-icon').textContent = isPass ? '✅' : '❌';
             document.getElementById('feedback-text').textContent = 
                 'AI评分：' + score + '/' + maxScore + '分' + (aiFeedback ? ' · ' + aiFeedback : '');
 
-            // 更新已答记录（含评分信息）
+            // 保存到已答记录（含评分信息）
             answeredMap.set(q.id, { userAnswer: userAns, score: score, maxScore: maxScore, aiFeedback: aiFeedback });
+            
+            // 更新导航按钮
+            updateNavigationButtons();
 
+            // 非考试模式显示重做按钮
+            document.getElementById('redo-btn').style.display = 'block';
+
+            // 更新统计
             updateStats();
+            renderChapterList();
             renderWrongList();
         }
 
