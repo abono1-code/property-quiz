@@ -915,9 +915,6 @@
 
     <!-- 错题本页面 -->
     <div id="page-wrong" class="page">
-        <button class="btn btn-outline" id="wrong-practice-all-btn" onclick="startWrongPractice()" style="display: none; margin-bottom: 16px;">
-            📝 练习全部错题
-        </button>
         <div id="wrong-list-container"></div>
     </div>
 
@@ -981,7 +978,6 @@
         
         <div class="btn-group">
             <button class="btn btn-primary" id="submit-btn" onclick="submitAnswer()">提交答案</button>
-            <button class="btn btn-outline" id="prev-btn" onclick="prevQuestion()" style="display: none;">上一题</button>
             <button class="btn btn-outline" id="next-btn" onclick="nextQuestion()" style="display: none;">下一题</button>
             <button class="btn btn-redo" id="redo-btn" onclick="redoCurrentQuestion()" style="display: none;">🔄 重做本题</button>
         </div>
@@ -2007,7 +2003,6 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
         let hasSubmitted = false;
         let isStarred = false;
         let currentMode = 'chapter'; // 'daily', 'chapter', 'wrong', 'exam'
-        let answeredMap = new Map(); // key: question.id, value: { userAnswer }
 
         // 模拟考试配置
         const EXAM_CHAPTERS = {
@@ -2118,12 +2113,6 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             const wrongIds = data.wrongQuestions || [];
             const container = document.getElementById('wrong-list-container');
             
-            // 显示/隐藏"练习全部错题"按钮
-            const practiceAllBtn = document.getElementById('wrong-practice-all-btn');
-            if (practiceAllBtn) {
-                practiceAllBtn.style.display = wrongIds.length > 1 ? 'block' : 'none';
-            }
-            
             if (wrongIds.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
@@ -2171,7 +2160,6 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             currentMode = 'daily';
             currentQuestions = [...questions].sort(() => Math.random() - 0.5);
             currentQuestionIndex = 0;
-            answeredMap.clear();
             showQuestion();
         }
 
@@ -2180,7 +2168,6 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             currentMode = 'chapter';
             currentQuestions = questions.filter(q => q.chapter === chapterId);
             currentQuestionIndex = 0;
-            answeredMap.clear();
             showQuestion();
         }
 
@@ -2197,7 +2184,6 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             }
             
             currentQuestionIndex = 0;
-            answeredMap.clear();
             showQuestion();
         }
 
@@ -2208,7 +2194,6 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             examScores = [];
             examTotalMax = 0;
             currentQuestions = [];
-            answeredMap.clear();
 
             // 按 EXAM_CHAPTERS 配置抽题
             const chapterKeys = Object.keys(EXAM_CHAPTERS).map(Number).sort((a, b) => a - b);
@@ -2279,49 +2264,16 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             isStarred = data.starredQuestions && data.starredQuestions.includes(q.id);
             updateStarBtn();
             
-            // 根据是否已答过设置状态
-            const alreadyAnswered = answeredMap.has(q.id);
-            if (alreadyAnswered) {
-                hasSubmitted = true;
-                userAnswer = answeredMap.get(q.id).userAnswer;
-                document.getElementById('user-answer').value = userAnswer;
-                document.getElementById('user-answer').style.display = 'none';
-                document.getElementById('answer-text').textContent = q.answer;
-                document.getElementById('answer-section').classList.add('show');
-                document.getElementById('feedback').classList.add('show');
-                
-                if (currentMode === 'exam') {
-                    // 考试模式：恢复AI评分结果
-                    const qMax = examQuestionMaxScores[currentQuestionIndex];
-                    const score = examScores[currentQuestionIndex] || 0;
-                    const scoreRate = qMax > 0 ? score / qMax : 0;
-                    const isPass = scoreRate >= 0.6;
-                    document.getElementById('feedback').className = 'feedback show ' + (isPass ? 'correct' : 'wrong');
-                    document.getElementById('feedback-icon').textContent = isPass ? '✅' : '❌';
-                    document.getElementById('feedback-text').textContent = 'AI评分：' + score + '/' + qMax + '分';
-                } else {
-                    document.getElementById('feedback').className = 'feedback show';
-                    document.getElementById('feedback-icon').textContent = '📝';
-                    document.getElementById('feedback-text').textContent = '参考答案已展示';
-                }
-                
-                document.getElementById('submit-btn').style.display = 'none';
-                updateNavigationButtons();
-                if (currentMode !== 'exam') {
-                    document.getElementById('redo-btn').style.display = 'block';
-                }
-            } else {
-                hasSubmitted = false;
-                userAnswer = '';
-                document.getElementById('user-answer').value = '';
-                document.getElementById('user-answer').style.display = 'block';
-                document.getElementById('answer-section').classList.remove('show');
-                document.getElementById('feedback').classList.remove('show');
-                document.getElementById('submit-btn').style.display = 'block';
-                document.getElementById('prev-btn').style.display = 'none';
-                document.getElementById('next-btn').style.display = 'none';
-                document.getElementById('redo-btn').style.display = 'none';
-            }
+            // 重置状态
+            hasSubmitted = false;
+            userAnswer = '';
+            document.getElementById('user-answer').value = '';
+            document.getElementById('user-answer').style.display = 'block';
+            document.getElementById('answer-section').classList.remove('show');
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('submit-btn').style.display = 'block';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('redo-btn').style.display = 'none';
             
             // 显示答题页面
             document.getElementById('question-page').classList.add('active');
@@ -2379,12 +2331,9 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             document.getElementById('feedback-text').textContent = '参考答案已展示';
             document.getElementById('feedback').className = 'feedback show';
             
-            // 保存到已答记录
-            answeredMap.set(q.id, { userAnswer: userAns });
-            
             // 更新按钮
             document.getElementById('submit-btn').style.display = 'none';
-            updateNavigationButtons();
+            document.getElementById('next-btn').style.display = 'block';
             // 非模拟考试模式显示重做按钮
             if (currentMode !== 'exam') {
                 document.getElementById('redo-btn').style.display = 'block';
@@ -2461,11 +2410,8 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             document.getElementById('feedback-text').textContent = 
                 `AI评分：${score}/${qMax}分` + (aiFeedback ? ' · ' + aiFeedback : '');
 
-            // 保存到已答记录
-            answeredMap.set(q.id, { userAnswer: userAns });
-            
             // 更新按钮
-            updateNavigationButtons();
+            document.getElementById('next-btn').style.display = 'block';
 
             // 更新进度显示
             const totalScore = examScores.reduce((a, b) => a + b, 0);
@@ -2571,9 +2517,6 @@ ${q.context ? '【背景资料】' + q.context + '\n' : ''}
         function redoCurrentQuestion() {
             const q = currentQuestions[currentQuestionIndex];
             
-            // 从已答记录中移除
-            answeredMap.delete(q.id);
-            
             // 重置作答状态
             hasSubmitted = false;
             userAnswer = '';
@@ -2588,37 +2531,10 @@ ${q.context ? '【背景资料】' + q.context + '\n' : ''}
             
             // 恢复按钮状态
             document.getElementById('submit-btn').style.display = 'block';
-            document.getElementById('prev-btn').style.display = 'none';
             document.getElementById('next-btn').style.display = 'none';
             document.getElementById('redo-btn').style.display = 'none';
             
             showToast('已重置，请重新作答');
-        }
-
-        // 上一题
-        function prevQuestion() {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                showQuestion();
-            }
-        }
-
-        // 更新导航按钮显示状态
-        function updateNavigationButtons() {
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
-            
-            // 考试模式不显示上一题按钮
-            if (currentMode === 'exam') {
-                prevBtn.style.display = 'none';
-            } else {
-                prevBtn.style.display = currentQuestionIndex > 0 ? 'block' : 'none';
-            }
-            
-            // 下一题按钮文字
-            const isLast = currentQuestionIndex >= currentQuestions.length - 1;
-            nextBtn.textContent = isLast ? (currentMode === 'exam' ? '交卷' : '完成练习') : '下一题';
-            nextBtn.style.display = 'block';
         }
 
         // 下一题
