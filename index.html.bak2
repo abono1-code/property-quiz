@@ -213,21 +213,6 @@
             transition: opacity 0.3s; pointer-events: none;
         }
         .toast.show { opacity: 1; }
-
-        /* 真题模式 */
-        .zhenti-list { list-style: none; }
-        .zhenti-item {
-            display: flex; align-items: center; padding: 16px; background: white;
-            border-radius: 12px; margin-bottom: 12px; cursor: pointer;
-            transition: all 0.3s; box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-            border-left: 4px solid #eb2f96;
-        }
-        .zhenti-item:active { transform: scale(0.98); background: #f5f5f5; }
-        .zhenti-badge {
-            display: inline-block; padding: 2px 8px; background: #fff0f6; color: #eb2f96;
-            border-radius: 10px; font-size: 11px; margin-left: 8px; font-weight: 600;
-        }
-
     </style>
 </head>
 <body>
@@ -250,25 +235,12 @@
         <button class="btn btn-primary" onclick="startDailyPractice()">📝 每日刷题</button>
         <button class="btn btn-outline" onclick="showPage('chapter')">📚 按章节练习</button>
         <button class="btn btn-primary" onclick="startExamPractice()" style="background: linear-gradient(135deg, #722ed1, #9254de);">🎯 模拟考试</button>
-        <button class="btn btn-primary" onclick="showPage('zhenti')" style="background: linear-gradient(135deg, #eb2f96, #f759ab);">📋 真题</button>
     </div>
 
     <!-- 章节选择页 -->
     <div id="page-chapter" class="page">
         <button class="page-back" onclick="showPage('home')">← 返回首页</button>
         <ul class="chapter-list" id="chapter-list"></ul>
-    </div>
-
-
-    <!-- 真题模式页面 -->
-    <div id="page-zhenti" class="page">
-        <button class="page-back" onclick="showPage('home')">← 返回首页</button>
-        <div class="card" style="text-align:center; background: linear-gradient(135deg, #fff0f6, #ffd6e7); border: 1px solid #ffadd2;">
-            <div style="font-size:20px; font-weight:700; color:#eb2f96; margin-bottom:6px;">📋 模拟试卷真题</div>
-            <div style="font-size:14px; color:#722ed1;">共5道大题 · 总分100分</div>
-        </div>
-        <button class="btn btn-primary" onclick="startZhentiPractice()" style="background: linear-gradient(135deg, #eb2f96, #f759ab); margin-bottom:16px;">📝 开始全部练习</button>
-        <ul class="zhenti-list" id="zhenti-list"></ul>
     </div>
 
     <!-- 错题本页面 -->
@@ -1308,98 +1280,6 @@ F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
             }
         ];
 
-
-        // ========== 真题数据 ==========
-        const questions2 = [
-            {
-                id: 71,
-                chapter: 'ch3',
-                chapterName: '第三章：行政综合管理',
-                type: '案例分析题',
-                score: 12,
-                context: `本市A住宅小区可收费建筑面积15万平方米，2023年12月甲物业服务企业与A住宅小区业主大会续签了为期三年的物业服务合同，并约定物业费采用包干制物业服务计费方式。2025年3月项目服务中心向甲物业服务企业财务部门提交了2024年物业服务费的决算报告，其中年度服务支出（成本）总额共计413万元，法定税费及企业利润合计39万元。`,
-                question: `住宅小区包干制物业服务费用计算和规范记账
-（1）请问背景资料中物业费的含义是什么？
-（2）请简述包干制的定义。如果你是A住宅小区会计，代收代付的水、电费，可否用于支付日常物业服务中的其他费用开支？
-（3）请问背景资料中包干制的物业服务费用的构成包括哪几个部分？
-（4）根据已知条件，请计算A住宅小区物业费每月每平方米收费标准是多少元？`,
-                answer: `1.物业费的含义是：指物业服务企业按照物业服务合同的约定，对房屋及配套的设施设备和相关场地进行维修、养护、管理，维护相关区域内的环境卫生和秩序，向业主收取的费用。（2分）
-2.包干制的定义：是指由业主向物业服务企业支付固定物业服务费用，盈余或者亏损均由物业服务企业享有或者承担的物业服务计费方式。（1分）不可以。（1分）
-3.包干制的物业服务费用的构成：物业服务成本（2分）；法定税费（2分）；物业服务企业的利润（2分）
-4.（413+39）÷15÷12=2.51元/㎡·月 算式正确1分、答案正确1分`
-            },
-            {
-                id: 72,
-                chapter: 'ch4',
-                chapterName: '第四章：物业运维管理服务',
-                type: '案例分析题',
-                score: 25,
-                context: `本市住宅小区，由丁物业服务企业提供前期物业服务，合同期限至2021年11月30日止。2020年下半年业主大会成立后决定重新选聘物业服务企业。经公开招标最终选聘了丙物业服务企业，并与之签订了新的《物业服务合同》。2021年11月底在小区办理物业移交手续时，丁物业服务企业直接将物业管理工作移交给丙物业服务企业，包括物业管理资料、物业共用部位、共用设施设备的查验与移交。现场的业委会成员对丁物业服务企业的做法不予认可。`,
-                question: `住宅小区档案交接
-（1）物业承接查验分哪两种类型？背景所述情况属于物业承接查验的哪种类型？
-（2）你认为丁物业服务企业上述做法对吗？为什么？
-（3）丁物业服务企业在这次物业机构更迭时移交的物业管理资料具体应该包括哪些？`,
-                answer: `1.物业承接查验分为：新建物业的承接查验（2分）；物业管理机构更迭时的承接查验两种类型（2分）。上述情况属于：物业管理机构更迭时的承接查验（2分）
-2.不对（2分）。原因：物业管理机构更迭时物业的管理移交应该是原有的物业服务企业将物业管理工作移交给物业的业主或业主委员会，再由业主或业主委员会将物业管理工作移交给新选聘的物业服务企业。虽然在具体移交中可合并进行，但要明确交接的主体、次序和责任（3分）
-3.查验和移交的物业管理资料：物业原始资料（2分）；物业共用部位、共用设施设备维修、养护和管理以及大中修、更新改造及专业检验的资料（2分）；业主资料（2分）；财务管理资料（2分）；合同协议书（2分）；人及档案材料（2分）；其他需移交的资料（2分）`
-            },
-            {
-                id: 73,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '案例分析题',
-                score: 20,
-                context: `某新建小区由B物业服务企业负责管理。近期，小区内频繁出现外来人员随意进出、楼道内堆放杂物、车辆乱停乱放等问题，导致业主投诉增多，小区环境秩序混乱，引起了社区管理部门的关注，要求B物业服务企业主动作为，配合好工作。为此，B物业服务企业决定加强公共安全管理防范工作，重点解决上述问题。`,
-                question: `住宅小区公共秩序维护重点管理内容
-（1）B物业服务企业在公共安全防范管理工作中应主动配合政府开展社区管理工作，除此之外，还应关注哪些内容？
-（2）就配合政府开展社区管理工作而言，涉及的主要内容是哪些？
-（3）经调查了解，该新建小区近期频繁出现的外来人员中有一大部分是装修施工人员，在强化管理后，施工现场的进出管理除了人员以外还应关注什么？`,
-                answer: `1.除了配合政府开展社区管理工作外：出入管理（1分）；物业项目公共安全秩序维护（1分）；灾害防治（1分）；施工现场的管理（1分）
-2.配合政府开展社区管理工作：重大社区活动知会辖区派出所及社区居委会（2分）；协助相关部门处置治安或意外事故（2分）；积极配合相关部门做好法律政策宣传教育（2分）；协助相关政府部门进行人口普查工作（2分）；协助辖区派出所进行暂住人口登记工作（2分）
-3.施工现场进出管理还包括：施工材料（2分）；设施设备（2分）；施工车辆（2分）`
-            },
-            {
-                id: 74,
-                chapter: 'ch6',
-                chapterName: '第六章：客户服务与公共关系维护',
-                type: '案例分析题',
-                score: 30,
-                context: `C小区业主何先生向物业管理处杨经理来电反映，楼上居民高空抛物砸碎了自家天井内的花盆，楼上居民还经常往楼下扔牛奶盒、烟蒂等物品，虽已投诉多次，但小区物业管理处客服人员每次都没有核查就答复何先生说找不到责任人，无法处理。何先生对此十分不满，强烈要求丙物业服务企业重视服务质量、提升处理效率。`,
-                question: `住宅小区日常客户投诉处理
-（1）正确处理客户投诉是改善管理与服务、加深与客户沟通联系的机会，请问案例中小区物业管理处客服人员接到业主投诉时，应详细记录哪些内容？
-（2）为了提高服务质量，必须针对不同类型客户的需求提供相应的服务内容，提供针对性客户服务的策略一般包括处理客户的常规事务和优化服务管理两个方面，请问处理客户的常规事务和优化服务管理分别包含哪些内容？
-（3）处理客户报事报修是物业服务的一项重要工作，其服务的时效性和质量直接影响到客户对物业服务的满意度，请问案例中小区管理处客服人员在处理客户报事报修及跟进过程中需要做好哪几方面工作？`,
-                answer: `1.应详细记录：时间（1分）；地点（1分）；投诉人姓名（1分）；联系电话（1分）；所居住地（1分）；被投诉人（1分）；投诉内容（1分）；投诉人的要求（1分）；接待人（1分）；处理人等（1分）（答出一项得1分，最高8分）
-2.处理客户的常规事务：制作物业周边信息手册（2分）；建立客户资料库（2分）；定期回访调查（2分）；了解客户需求（2分）；优化服务管理：制定完善物业服务方案（2分）；调查客户满意度（2分）
-3.客户报事报修处理及跟进：做好详细、准确的记录（2分）；日常报修处理的时间安排（2分）；区分维修内容的轻重缓急（2分）；区分无偿维修与有偿维修（2分）；制定维修服务承诺（2分）；接待电话报修（2分）（答出一项得2分，最高10分）`
-            },
-            {
-                id: 75,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '案例分析题',
-                score: 13,
-                context: `甲物业服务企业与建设单位签订了本市E住宅小区前期物业服务合同，合同期限自2023年1月1日至2024年12月31日止。2024年初该小区成立业主大会，不久组织物业管理公开招投标并最终选聘了乙物业服务企业，双方签订了正常期物业服务合同，该合同于2024年7月1日生效。业主委员会将选聘结果书面通知甲物业服务企业，并要求甲物业服务企业于同年6月底之前与乙物业服务公司办妥移交手续。甲物业服务企业提出异议，认为前期物业服务合同约定的期限尚未届满，且6月我国全面进入汛期，项目管理处也按应急预案针对加强了演练，此时移交存在较大风险，要求继续为小区提供物业服务至2024年12月31日，之后再办理移交手续。`,
-                question: `物业管理风险分类识别及防范
-（1）本案中业主大会与乙物业服务企业签订的物业服务合同中约定的生效日期是否符合法律法规？为什么？
-（2）本案中，从风险角度看，甲物业服务企业面临的是哪种类别的风险？按物业管理的不同阶段，物业管理风险可以划分为哪几种类别？
-（3）本案中甲物业服务企业的应急演练通常包括哪些步骤？`,
-                answer: `1.符合法律规定（1分）；原因：《中华人民共和国民法典》第九百四十条规定，业主大会与物业服务企业签订的物业服务合同生效的，前期物业服务合同终止；或《物业管理条例》第二十六条规定："期限未满、业主委员会与物业服务企业签订的物业服务合同生效的，前期物业服务合同终止"（3分）
-2.甲物业服务企业面临：前期物业管理风险（1分）；物业管理风险划分为：早期介入风险（1分）；前期物业管理风险（1分）；日常物业管理风险（1分）；移交阶段物业管理风险等（1分）
-3.应急预案演练步骤：制定演练方案（1分）；演练准备（人员、资金、物资、技术、安全等准备）（1分）；演练实施（包括演练动员、演练执行、演练结束）（1分）；演练总结和改进（1分）`
-            }
-        ];
-
-        // 真题按章节分组信息
-        const zhentiChapters = [
-            { id: 'ch3', name: '第三章：行政综合管理', icon: '💰', score: 12 },
-            { id: 'ch4', name: '第四章：物业运维管理服务', icon: '🔧', score: 25 },
-            { id: 'ch5', name: '第五章：环境管理', icon: '🌿', score: 20 },
-            { id: 'ch6', name: '第六章：客户服务与公共关系维护', icon: '👥', score: 30 },
-            { id: 'ch8', name: '第八章：风险管理', icon: '⚠️', score: 13 }
-        ];
-
-
         // ========== 章节信息 ==========
 const chapters = [
             { id: 'ch3', name: '第三章：行政综合管理', icon: '💰', score: '12分' },
@@ -1468,7 +1348,7 @@ const chapters = [
         // ========== 统计显示 ==========
         function updateStats() {
             const data = getData();
-            const total = questions.length + questions2.length;
+            const total = questions.length;
             const allStats = data.stats || {};
             let correctCount = 0;
             let totalAnswered = 0;
@@ -1565,61 +1445,6 @@ const chapters = [
             }
         }
 
-
-        // ========== 真题模式 ==========
-        function renderZhentiList() {
-            const list = document.getElementById('zhenti-list');
-            const data = getData();
-            const stats = data.stats || {};
-            let html = '';
-            zhentiChapters.forEach(ch => {
-                const chQuestions = questions2.filter(q => q.chapter === ch.id);
-                const q = chQuestions[0]; // each chapter has 1 question in zhenti
-                if (!q) return;
-                const answered = stats[q.id] && stats[q.id].answered;
-                const correct = stats[q.id] && stats[q.id].correct;
-                html += '<li class="zhenti-item" onclick="startZhentiChapterPractice(\'' + ch.id + '\')">';
-                html += '<div class="chapter-icon ' + ch.id + '" style="background: linear-gradient(135deg, #eb2f96, #f759ab);">' + ch.icon + '</div>';
-                html += '<div class="chapter-info">';
-                html += '<div class="chapter-title">' + ch.name + '<span class="zhenti-badge">' + ch.score + '分</span></div>';
-                html += '<div class="chapter-meta">' + (answered ? (correct ? '✅ 已通过' : '❌ 未通过') : '未作答') + '</div>';
-                html += '<div class="chapter-progress"><div class="chapter-progress-fill" style="width:' + (answered ? '100' : '0') + '%; background: linear-gradient(135deg, #eb2f96, #f759ab);"></div></div>';
-                html += '</div>';
-                html += '<div class="chapter-arrow">›</div>';
-                html += '</li>';
-            });
-            list.innerHTML = html;
-        }
-
-        // 真题全部练习（按顺序，使用题目自身score作为满分）
-        function startZhentiPractice() {
-            currentMode = 'zhenti';
-            currentQuestions = [...questions2];
-            examQuestionMaxScores = questions2.map(q => q.score);
-            examScores = [];
-            examTotalMax = examQuestionMaxScores.reduce((a, b) => a + b, 0);
-            currentQuestionIndex = 0;
-            answeredMap.clear();
-            openQuestionPage();
-        }
-
-        // 真题按章节练习（单题）
-        function startZhentiChapterPractice(chapterId) {
-            currentMode = 'zhenti';
-            const chQuestions = questions2.filter(q => q.chapter === chapterId);
-            if (chQuestions.length === 0) {
-                showToast('该章节暂无真题');
-                return;
-            }
-            currentQuestions = chQuestions;
-            examQuestionMaxScores = chQuestions.map(q => q.score);
-            examScores = [];
-            examTotalMax = examQuestionMaxScores.reduce((a, b) => a + b, 0);
-            currentQuestionIndex = 0;
-            answeredMap.clear();
-            openQuestionPage();
-        }
-
         // ========== 练习入口 ==========
 
         // 每日刷题：随机出全部题
@@ -1713,7 +1538,7 @@ const chapters = [
             const data = getData();
 
             // 更新进度
-            if (currentMode === 'exam' || currentMode === 'zhenti') {
+            if (currentMode === 'exam') {
                 var totalScoreSoFar = 0;
                 for (var si = 0; si < examScores.length; si++) totalScoreSoFar += examScores[si];
                 document.getElementById('question-progress').textContent = '第' + (currentQuestionIndex + 1) + '题/共' + total + '题 · 总分' + totalScoreSoFar + '/' + examTotalMax;
@@ -1727,7 +1552,7 @@ const chapters = [
             // 考试进度条和本题满分
             var examBar = document.getElementById('exam-progress-bar');
             var examLabel = document.getElementById('exam-score-label');
-            if (currentMode === 'exam' || currentMode === 'zhenti') {
+            if (currentMode === 'exam') {
                 examBar.classList.add('show');
                 examLabel.classList.add('show');
                 var progress = ((currentQuestionIndex + 1) / total) * 100;
@@ -1807,10 +1632,10 @@ const chapters = [
             updateNavigationButtons();
 
             // 考试模式不显示重做按钮
-            if (currentMode === 'exam') {
-                document.getElementById('redo-btn').style.display = 'none';
-            } else {
+            if (currentMode !== 'exam') {
                 document.getElementById('redo-btn').style.display = 'block';
+            } else {
+                document.getElementById('redo-btn').style.display = 'none';
             }
         }
 
@@ -1852,8 +1677,6 @@ const chapters = [
 
             if (currentMode === 'exam') {
                 submitExamAnswer(q, userAns);
-            } else if (currentMode === 'zhenti') {
-                submitZhentiAnswer(q, userAns);
             } else {
                 submitNonExamAnswer(q, userAns);
             }
@@ -2038,105 +1861,6 @@ const chapters = [
             renderWrongList();
         }
 
-
-        // ========== 真题模式提交 ==========
-        async function submitZhentiAnswer(q, userAns) {
-            var qMax = examQuestionMaxScores[currentQuestionIndex];
-
-            // 隐藏输入框，显示用户答案
-            document.getElementById('input-area').style.display = 'none';
-            var displayEl = document.getElementById('user-answer-display');
-            displayEl.textContent = userAns;
-            displayEl.style.display = 'block';
-
-            // 隐藏提交按钮
-            document.getElementById('submit-btn').style.display = 'none';
-
-            // ★ 立即显示参考答案
-            document.getElementById('answer-text').textContent = q.answer;
-            document.getElementById('answer-section').classList.add('show');
-
-            // ★ 立即显示AI评分loading
-            document.getElementById('feedback').className = 'feedback show';
-            document.getElementById('feedback-icon').innerHTML = '<div class="ai-scoring-loading"><div class="spinner"></div><p>AI评分中...</p></div>';
-            document.getElementById('feedback-text').textContent = '';
-
-            // ★ 立即显示导航按钮和重做按钮
-            updateNavigationButtons();
-            document.getElementById('redo-btn').style.display = 'block';
-
-            // 保存答题记录（标记为已答，AI未完成）
-            answeredMap.set(q.id, { userAnswer: userAns, score: 0, maxScore: qMax, aiFeedback: '', aiCompleted: false });
-
-            // 更新统计
-            var data = getData();
-            if (!data.stats) data.stats = {};
-            if (!data.stats[q.id]) data.stats[q.id] = { answered: false, correct: false };
-            data.stats[q.id].answered = true;
-            if (typeof data.todayAnswered === 'undefined') data.todayAnswered = 0;
-            data.todayAnswered++;
-            saveData(data);
-            updateStats();
-
-            // ★ 异步AI评分
-            var score = 0;
-            var aiFeedback = '';
-            try {
-                var result = await aiScoreQuestion(q, userAns, qMax);
-                score = result.score;
-                aiFeedback = result.feedback || '';
-            } catch (e) {
-                console.error('AI评分失败:', e);
-                score = 0;
-                aiFeedback = 'AI评分失败，请参考标准答案自行评分';
-            }
-
-            // 分数钳位
-            score = Math.floor(Number(score));
-            score = Math.min(score, qMax);
-            score = Math.max(score, 0);
-
-            examScores.push(score);
-
-            // 更新答题记录（AI已完成）
-            answeredMap.set(q.id, { userAnswer: userAns, score: score, maxScore: qMax, aiFeedback: aiFeedback, aiCompleted: true });
-
-            // 更新统计：正确判断
-            var data2 = getData();
-            data2.stats[q.id].correct = (qMax > 0 ? score / qMax : 0) >= 0.6;
-
-            // 得分率<60%自动加错题本
-            var scoreRate = qMax > 0 ? score / qMax : 0;
-            if (scoreRate < 0.6) {
-                if (!data2.wrongQuestions) data2.wrongQuestions = [];
-                if (!data2.wrongQuestions.includes(q.id)) {
-                    data2.wrongQuestions.push(q.id);
-                }
-            } else {
-                if (data2.wrongQuestions) {
-                    var idx = data2.wrongQuestions.indexOf(q.id);
-                    if (idx > -1) data2.wrongQuestions.splice(idx, 1);
-                }
-            }
-            saveData(data2);
-
-            // ★ 更新界面上的评分结果
-            var isPass = scoreRate >= 0.6;
-            document.getElementById('feedback').className = 'feedback show ' + (isPass ? 'correct' : 'wrong');
-            document.getElementById('feedback-icon').textContent = isPass ? '✅' : '❌';
-            document.getElementById('feedback-text').textContent = 'AI评分：' + score + '/' + qMax + '分' + (aiFeedback ? ' · ' + aiFeedback : '');
-
-            // 更新进度显示
-            var totalScoreSoFar = 0;
-            for (var si = 0; si < examScores.length; si++) totalScoreSoFar += examScores[si];
-            var totalQ = currentQuestions.length;
-            document.getElementById('question-progress').textContent = '第' + (currentQuestionIndex + 1) + '题/共' + totalQ + '题 · 总分' + totalScoreSoFar + '/' + examTotalMax;
-
-            updateStats();
-            renderZhentiList();
-            renderWrongList();
-        }
-
         // ========== AI评分 ==========
         async function aiScoreQuestion(q, userAns, maxScore) {
             var COZE_API = 'https://api.coze.cn/v3/chat';
@@ -2237,10 +1961,6 @@ const chapters = [
             if (currentMode === 'exam') {
                 prevBtn.style.display = 'none';
                 redoBtn.style.display = 'none';
-            } else if (currentMode === 'zhenti') {
-                // 真题模式：显示上一题和重做，进度条类似考试
-                prevBtn.style.display = currentQuestionIndex > 0 ? 'block' : 'none';
-                redoBtn.style.display = 'block';
             } else {
                 prevBtn.style.display = currentQuestionIndex > 0 ? 'block' : 'none';
                 redoBtn.style.display = 'block';
@@ -2270,9 +1990,6 @@ const chapters = [
                 // 最后一题
                 if (currentMode === 'exam') {
                     showExamTranscript();
-                } else if (currentMode === 'zhenti') {
-                    closeQuestion();
-                    showToast('恭喜完成真题练习！');
                 } else {
                     closeQuestion();
                     showToast('恭喜完成练习！');
