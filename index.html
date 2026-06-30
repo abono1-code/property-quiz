@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>物业初级操作题刷题</title>
+    <title>物业初级操作题刷题（AI评分版）</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
         :root {
             --primary: #1890ff;
             --success: #52c41a;
@@ -16,265 +22,937 @@
             --text-light: #666;
             --border: #e8e8e8;
         }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: var(--bg); color: var(--text); min-height: 100vh;
-            padding-bottom: 70px; overflow-x: hidden;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 70px;
+            overflow-x: hidden;
         }
+        
+        /* 头部 */
         .header {
-            background: var(--primary); color: white; padding: 16px 20px;
-            position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 2px 8px rgba(24,144,255,0.3);
+            background: var(--primary);
+            color: white;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
         }
-        .header h1 { font-size: 18px; font-weight: 600; }
-        .header-sub { font-size: 12px; opacity: 0.9; margin-top: 4px; }
-        .page { display: none; padding: 16px; animation: fadeIn 0.3s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .home-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-        .stat-item { background: linear-gradient(135deg, var(--primary), #40a9ff); color: white; padding: 16px; border-radius: 12px; text-align: center; }
-        .stat-item.green { background: linear-gradient(135deg, var(--success), #73d13d); }
-        .stat-item.orange { background: linear-gradient(135deg, #fa8c16, #ffc53d); }
-        .stat-value { font-size: 28px; font-weight: 700; }
-        .stat-label { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+        
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .header-sub {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        
+        /* 页面容器 */
+        .page {
+            display: none;
+            padding: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 卡片 */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        /* 首页 */
+        .home-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: linear-gradient(135deg, var(--primary), #40a9ff);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-item.green {
+            background: linear-gradient(135deg, var(--success), #73d13d);
+        }
+        
+        .stat-item.orange {
+            background: linear-gradient(135deg, #fa8c16, #ffc53d);
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        
         .btn {
-            display: block; width: 100%; padding: 16px; border: none; border-radius: 12px;
-            font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-bottom: 12px;
+            display: block;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 12px;
         }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:active { background: #096dd9; transform: scale(0.98); }
-        .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
-        .btn-outline:active { background: #e6f7ff; }
-        .btn-redo { background: white; color: #fa8c16; border: 2px solid #fa8c16; }
-        .btn-redo:active { background: #fff7e6; transform: scale(0.98); }
-        .btn-danger { background: white; color: var(--error); border: 2px solid var(--error); }
-        .btn-danger:active { background: #fff2f0; }
-
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:active {
+            background: #096dd9;
+            transform: scale(0.98);
+        }
+        
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:active {
+            background: #e6f7ff;
+        }
+        
         /* 章节列表 */
-        .chapter-list { list-style: none; }
+        .chapter-list {
+            list-style: none;
+        }
+        
         .chapter-item {
-            display: flex; align-items: center; padding: 16px; background: white;
-            border-radius: 12px; margin-bottom: 12px; cursor: pointer;
-            transition: all 0.3s; box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
         }
-        .chapter-item:active { transform: scale(0.98); background: #f5f5f5; }
+        
+        .chapter-item:active {
+            transform: scale(0.98);
+            background: #f5f5f5;
+        }
+        
         .chapter-icon {
-            width: 48px; height: 48px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 20px; margin-right: 14px; flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), #40a9ff);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin-right: 14px;
+            flex-shrink: 0;
         }
+        
         .chapter-icon.ch3 { background: linear-gradient(135deg, #1890ff, #40a9ff); }
         .chapter-icon.ch4 { background: linear-gradient(135deg, #722ed1, #9254de); }
         .chapter-icon.ch5 { background: linear-gradient(135deg, #13c2c2, #36cfc9); }
         .chapter-icon.ch6 { background: linear-gradient(135deg, #fa8c16, #ffc53d); }
-        .chapter-icon.ch8 { background: linear-gradient(135deg, #eb2f96, #f759ab); }
-        .chapter-info { flex: 1; min-width: 0; }
-        .chapter-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-        .chapter-meta { font-size: 12px; color: var(--text-light); }
-        .chapter-progress { width: 100%; height: 6px; background: #f0f0f0; border-radius: 3px; margin-top: 8px; overflow: hidden; }
-        .chapter-progress-fill { height: 100%; background: var(--primary); border-radius: 3px; transition: width 0.3s; }
-        .chapter-arrow { color: #ccc; font-size: 18px; margin-left: 8px; }
-        .page-back {
-            display: inline-flex; align-items: center; gap: 4px;
-            font-size: 14px; color: var(--primary); background: none; border: none;
-            padding: 8px 0; margin-bottom: 12px; cursor: pointer;
+        .chapter-icon.ch5a { background: linear-gradient(135deg, #13c2c2, #36cfc9); }
+        .chapter-icon.ch5b { background: linear-gradient(135deg, #52c41a, #73d13d); }
+        .chapter-icon.ch7 { background: linear-gradient(135deg, #eb2f96, #f759ab); }
+        
+        .chapter-info {
+            flex: 1;
+            min-width: 0;
         }
-
+        
+        .chapter-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        
+        .chapter-meta {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .chapter-arrow {
+            color: #ccc;
+            font-size: 18px;
+        }
+        
         /* 答题页面 */
         .question-page {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg); z-index: 200; display: none; flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
         }
-        .question-page.active { display: flex; }
+        
+        .question-page.active {
+            display: flex;
+        }
+        
         .question-header {
-            background: white; padding: 12px 16px;
-            display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid var(--border); flex-shrink: 0;
+            background: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
         }
-        .question-back { font-size: 16px; color: var(--primary); background: none; border: none; padding: 8px; margin: -8px; cursor: pointer; }
-        .question-progress { font-size: 14px; color: var(--text-light); }
-        .star-btn { background: none; border: none; font-size: 20px; color: #ccc; cursor: pointer; padding: 4px; }
-        .star-btn.starred { color: #faad14; }
-        .exam-progress-bar { display: none; background: #f0f0f0; border-radius: 4px; height: 6px; margin: 0 16px; overflow: hidden; }
-        .exam-progress-bar.show { display: block; }
-        .exam-progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #40a9ff); border-radius: 4px; transition: width 0.3s; }
-        .question-content { flex: 1; overflow-y: auto; padding: 16px; -webkit-overflow-scrolling: touch; }
+        
+        .question-back {
+            font-size: 16px;
+            color: var(--primary);
+            background: none;
+            border: none;
+            padding: 8px;
+            margin: -8px;
+            cursor: pointer;
+        }
+        
+        .question-progress {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .question-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
         .question-type {
-            display: inline-block; padding: 4px 12px; background: #e6f7ff;
-            color: var(--primary); border-radius: 20px; font-size: 12px; margin-bottom: 12px;
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e6f7ff;
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 12px;
         }
-        .exam-score-label {
-            display: none; font-size: 13px; color: var(--primary); font-weight: 600;
-            margin-bottom: 8px; padding: 6px 12px; background: #e6f7ff;
-            border-radius: 8px; text-align: center;
+        
+        .question-text {
+            font-size: 17px;
+            line-height: 1.7;
+            color: var(--text);
+            margin-bottom: 20px;
         }
-        .exam-score-label.show { display: block; }
+        
         .question-context {
-            background: #fffbe6; border: 1px solid #ffe58f; border-radius: 8px;
-            padding: 12px; font-size: 14px; line-height: 1.6; color: #ad6800; margin-bottom: 16px;
+            background: #fffbe6;
+            border: 1px solid #ffe58f;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #ad6800;
+            margin-bottom: 16px;
+        }
+        
+        /* 填空题输入 */
+        .input-area {
+            margin-bottom: 16px;
+        }
+        
+        .input-area textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        .input-area textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        /* 答案展示 */
+        .answer-section {
+            background: #f6ffed;
+            border: 1px solid #b7eb8f;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            display: none;
+        }
+        
+        .answer-section.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .answer-title {
+            font-size: 14px;
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .answer-title::before {
+            content: "✓";
+            margin-right: 6px;
+            font-weight: bold;
+        }
+        
+        .answer-text {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #389e0d;
             white-space: pre-wrap;
         }
-        .question-text { font-size: 17px; line-height: 1.7; color: var(--text); margin-bottom: 20px; white-space: pre-wrap; }
-        .input-area { margin-bottom: 16px; }
-        .input-area textarea {
-            width: 100%; min-height: 120px; padding: 14px; border: 2px solid var(--border);
-            border-radius: 12px; font-size: 16px; line-height: 1.6; resize: vertical; transition: border-color 0.3s;
+        
+        /* 答题反馈 */
+        .feedback {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: none;
         }
-        .input-area textarea:focus { outline: none; border-color: var(--primary); }
-        .user-answer-display {
-            background: #f0f5ff; border: 1px solid #adc6ff; border-radius: 8px;
-            padding: 12px; font-size: 15px; line-height: 1.6; color: #2f54eb;
-            margin-bottom: 16px; display: none; white-space: pre-wrap;
+        
+        .feedback.show {
+            display: block;
+            animation: bounce 0.5s ease;
         }
-        .answer-section {
-            background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 12px;
-            padding: 16px; margin-top: 16px; display: none;
+        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
-        .answer-section.show { display: block; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .answer-title { font-size: 14px; color: var(--success); font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; }
-        .answer-title::before { content: "✓"; margin-right: 6px; font-weight: bold; }
-        .answer-text { font-size: 15px; line-height: 1.7; color: #389e0d; white-space: pre-wrap; }
-        .feedback { text-align: center; padding: 20px; border-radius: 12px; margin-bottom: 16px; display: none; }
-        .feedback.show { display: block; animation: bounce 0.5s ease; }
-        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        .feedback.correct { background: #f6ffed; border: 2px solid var(--success); }
-        .feedback.wrong { background: #fff2f0; border: 2px solid var(--error); }
-        .feedback-icon { font-size: 48px; margin-bottom: 10px; }
-        .feedback-text { font-size: 16px; font-weight: 600; line-height: 1.5; }
-        .btn-group { display: flex; gap: 12px; padding: 16px; background: white; border-top: 1px solid var(--border); flex-shrink: 0; }
-        .btn-group .btn { flex: 1; margin: 0; }
-
+        
+        .feedback.correct {
+            background: #f6ffed;
+            border: 2px solid var(--success);
+        }
+        
+        .feedback.wrong {
+            background: #fff2f0;
+            border: 2px solid var(--error);
+        }
+        
+        .feedback-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .feedback-text {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
         /* 底部导航 */
         .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; background: white;
-            display: flex; border-top: 1px solid var(--border); z-index: 100; padding: 8px 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            border-top: 1px solid var(--border);
+            z-index: 100;
+            padding: 8px 0;
             padding-bottom: max(8px, env(safe-area-inset-bottom));
         }
-        .nav-item { flex: 1; text-align: center; padding: 6px; cursor: pointer; color: var(--text-light); transition: color 0.3s; }
-        .nav-item.active { color: var(--primary); }
-        .nav-icon { font-size: 22px; margin-bottom: 2px; }
-        .nav-label { font-size: 11px; }
-
+        
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 6px;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 2px;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+        }
+        
+        /* 按钮组 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            background: white;
+            border-top: 1px solid var(--border);
+        }
+        
+        .btn-group .btn {
+            flex: 1;
+            margin: 0;
+        }
+        
         /* 错题列表 */
-        .wrong-list { list-style: none; }
+        .wrong-list {
+            list-style: none;
+        }
+        
         .wrong-item {
-            background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px;
-            cursor: pointer; transition: all 0.3s; border-left: 4px solid var(--error);
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid var(--error);
         }
-        .wrong-item:active { transform: scale(0.98); }
-        .wrong-title { font-size: 14px; color: var(--text); margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .wrong-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-light); }
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); }
-        .empty-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
-
-        /* 考试成绩单 */
-        .exam-transcript {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg); z-index: 300; display: none; flex-direction: column; overflow-y: auto;
+        
+        .wrong-item:active {
+            transform: scale(0.98);
         }
-        .exam-transcript.show { display: flex; }
-        .transcript-header { background: linear-gradient(135deg, #1890ff, #40a9ff); color: white; padding: 30px 20px; text-align: center; flex-shrink: 0; }
-        .transcript-header h2 { font-size: 22px; margin-bottom: 8px; }
-        .transcript-total { font-size: 48px; font-weight: 700; margin: 10px 0; }
-        .transcript-total small { font-size: 20px; font-weight: 400; opacity: 0.8; }
-        .transcript-summary { display: flex; justify-content: space-around; padding: 16px 0; margin-bottom: 8px; }
-        .transcript-summary-item { text-align: center; }
-        .transcript-summary-value { font-size: 24px; font-weight: 700; }
-        .transcript-summary-label { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 4px; }
-        .transcript-body { padding: 16px; flex: 1; }
-        .transcript-chapter { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .transcript-chapter-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-        .transcript-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
-        .transcript-item:last-child { border-bottom: none; }
-        .transcript-item-index { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; margin-right: 12px; flex-shrink: 0; }
-        .transcript-item-index.pass { background: #f6ffed; color: var(--success); }
-        .transcript-item-index.fail { background: #fff2f0; color: var(--error); }
-        .transcript-item-q { flex: 1; font-size: 14px; color: var(--text); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin-right: 12px; }
-        .transcript-item-score { font-size: 16px; font-weight: 600; flex-shrink: 0; }
-        .transcript-item-score.pass { color: var(--success); }
-        .transcript-item-score.fail { color: var(--error); }
-        .transcript-item-max { font-size: 12px; color: var(--text-light); flex-shrink: 0; margin-left: 2px; }
-        .transcript-actions { padding: 16px; padding-bottom: max(16px, env(safe-area-inset-bottom)); flex-shrink: 0; }
-        .transcript-actions .btn { margin-bottom: 12px; }
+        
+        .wrong-title {
+            font-size: 14px;
+            color: var(--text);
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .wrong-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+        
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        /* 统计页面 */
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .stats-title {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+        
+        .stats-chart {
+            height: 180px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+        
+        .chart-bar {
+            width: 40px;
+            background: linear-gradient(to top, var(--primary), #40a9ff);
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            transition: height 0.5s ease;
+        }
+        
+        .chart-bar span {
+            position: absolute;
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: var(--text-light);
+            white-space: nowrap;
+        }
+        
+        .chapter-stats {
+            list-style: none;
+        }
+        
+        .chapter-stat-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .chapter-stat-item:last-child {
+            border-bottom: none;
+        }
+        
+        .chapter-stat-name {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .chapter-stat-bar {
+            width: 100px;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            margin: 0 12px;
+            overflow: hidden;
+        }
+        
+        .chapter-stat-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        
+        .chapter-stat-percent {
+            font-size: 14px;
+            color: var(--text-light);
+            width: 45px;
+            text-align: right;
+        }
+        
+        /* 每日刷题设置 */
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .setting-label {
+            font-size: 15px;
+        }
+        
+        .setting-value {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        .number-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .number-input button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .number-input button:active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .number-input span {
+            font-size: 18px;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        /* 过渡动画 */
+        .slide-in {
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        /* 收藏标记 */
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #ccc;
+            cursor: pointer;
+            padding: 4px;
+        }
+        
+        .star-btn.starred {
+            color: #faad14;
+        }
+        
+        /* 答案浮窗样式 */
+        .answer-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeInOverlay 0.2s ease;
+        }
+        .answer-modal-overlay.show {
+            display: flex;
+        }
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .answer-modal {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: modalSlideUp 0.3s ease;
+            position: relative;
+        }
+        @keyframes modalSlideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .answer-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .answer-modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .answer-modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: #f5f5f5;
+            color: #999;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .answer-modal-close:hover {
+            background: #e8e8e8;
+            color: #333;
+        }
+        .answer-modal-close:active {
+            transform: scale(0.9);
+        }
+        .answer-modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .answer-modal-answer {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #389e0d;
+            white-space: pre-wrap;
+        }
+        .answer-modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+        }
+        .answer-modal-footer .btn {
+            margin: 0;
+        }
 
-        /* AI评分loading */
-        .ai-scoring-loading { text-align: center; padding: 20px; }
-        .ai-scoring-loading .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid #f0f0f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .ai-scoring-loading p { margin-top: 10px; font-size: 14px; color: var(--text-light); }
-
-        /* Toast */
+        /* Toast提示 */
         .toast {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.75); color: white; padding: 12px 24px;
-            border-radius: 8px; font-size: 14px; z-index: 1000; opacity: 0;
-            transition: opacity 0.3s; pointer-events: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
         }
-        .toast.show { opacity: 1; }
-
-        /* 真题模式 */
-        .zhenti-list { list-style: none; }
-        .zhenti-item {
-            display: flex; align-items: center; padding: 16px; background: white;
-            border-radius: 12px; margin-bottom: 12px; cursor: pointer;
-            transition: all 0.3s; box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-            border-left: 4px solid #eb2f96;
-        }
-        .zhenti-item:active { transform: scale(0.98); background: #f5f5f5; }
-        .zhenti-badge {
-            display: inline-block; padding: 2px 8px; background: #fff0f6; color: #eb2f96;
-            border-radius: 10px; font-size: 11px; margin-left: 8px; font-weight: 600;
+        
+        .toast.show {
+            opacity: 1;
         }
 
+        /* AI评分相关样式 */
+
+
+        /* AI评分按钮 */
+        .btn-ai {
+            background: linear-gradient(135deg, #722ed1, #9254de);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-ai:active {
+            transform: scale(0.98);
+            background: linear-gradient(135deg, #531dab, #722ed1);
+        }
+        .btn-ai.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        .btn-ai.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        @keyframes spin {
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        /* AI评分结果 */
+        .ai-score-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 16px;
+            text-align: center;
+            display: none;
+            animation: slideUp 0.4s ease;
+        }
+        .ai-score-section.show {
+            display: block;
+        }
+        .ai-score-header {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .ai-score-ring {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 16px;
+        }
+        .ai-score-ring svg {
+            transform: rotate(-90deg);
+        }
+        .ai-score-ring .bg {
+            stroke: #f0f0f0;
+        }
+        .ai-score-ring .progress {
+            transition: stroke-dashoffset 1s ease;
+        }
+        .ai-score-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            font-weight: 700;
+        }
+        .ai-score-number.excellent { color: #52c41a; }
+        .ai-score-number.good { color: #1890ff; }
+        .ai-score-number.fair { color: #faad14; }
+        .ai-score-number.poor { color: #ff4d4f; }
+        .ai-score-label {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: -8px;
+            margin-bottom: 16px;
+        }
+        .ai-score-label.excellent { color: #52c41a; }
+        .ai-score-label.good { color: #1890ff; }
+        .ai-score-label.fair { color: #faad14; }
+        .ai-score-label.poor { color: #ff4d4f; }
+        .ai-score-feedback {
+            background: #fafafa;
+            border-radius: 10px;
+            padding: 14px;
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text);
+        }
+        .ai-score-feedback-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-light);
+            font-size: 12px;
+        }
+
+
+
+        
     </style>
 </head>
 <body>
     <!-- 头部 -->
-    <div class="header">
+    <div class="header" style="position:relative;">
         <h1>物业经理初级刷题</h1>
-        <div class="header-sub">2026年第一轮实操考试复习</div>
+        <div class="header-sub">2026年第二轮实操考试复习（陈雅萍）</div>
+
     </div>
 
     <!-- 首页 -->
     <div id="page-home" class="page active">
         <div class="card">
             <div class="home-stats">
-                <div class="stat-item"><div class="stat-value" id="stat-total">0</div><div class="stat-label">总题数</div></div>
-                <div class="stat-item green"><div class="stat-value" id="stat-correct">0</div><div class="stat-label">正确数</div></div>
-                <div class="stat-item orange"><div class="stat-value" id="stat-today">0</div><div class="stat-label">今日已答</div></div>
-                <div class="stat-item"><div class="stat-value" id="stat-rate">0%</div><div class="stat-label">正确率</div></div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">总题数</div>
+                </div>
+                <div class="stat-item green">
+                    <div class="stat-value" id="stat-correct">0</div>
+                    <div class="stat-label">正确数</div>
+                </div>
+                <div class="stat-item orange">
+                    <div class="stat-value" id="stat-today">0</div>
+                    <div class="stat-label">今日已答</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-rate">0%</div>
+                    <div class="stat-label">正确率</div>
+                </div>
             </div>
         </div>
-        <button class="btn btn-primary" onclick="startDailyPractice()">📝 每日刷题</button>
-        <button class="btn btn-outline" onclick="showPage('chapter')">📚 按章节练习</button>
-        <button class="btn btn-primary" onclick="startExamPractice()" style="background: linear-gradient(135deg, #722ed1, #9254de);">🎯 模拟考试</button>
-        <button class="btn btn-primary" onclick="showPage('zhenti')" style="background: linear-gradient(135deg, #eb2f96, #f759ab);">📋 真题</button>
+        
+        <button class="btn btn-primary" onclick="startDailyPractice()">
+            📝 每日刷题
+        </button>
+        <button class="btn btn-outline" onclick="showPage('chapter')">
+            📚 按章节练习
+        </button>
     </div>
 
-    <!-- 章节选择页 -->
+    <!-- 章节页面 -->
     <div id="page-chapter" class="page">
-        <button class="page-back" onclick="showPage('home')">← 返回首页</button>
         <ul class="chapter-list" id="chapter-list"></ul>
-    </div>
-
-
-    <!-- 真题模式页面 -->
-    <div id="page-zhenti" class="page">
-        <button class="page-back" onclick="showPage('home')">← 返回首页</button>
-        <div class="card" style="text-align:center; background: linear-gradient(135deg, #fff0f6, #ffd6e7); border: 1px solid #ffadd2;">
-            <div style="font-size:20px; font-weight:700; color:#eb2f96; margin-bottom:6px;">📋 模拟试卷真题</div>
-            <div style="font-size:14px; color:#722ed1;">共5道大题 · 总分100分</div>
-        </div>
-        <button class="btn btn-primary" onclick="startZhentiPractice()" style="background: linear-gradient(135deg, #eb2f96, #f759ab); margin-bottom:16px;">📝 开始全部练习</button>
-        <ul class="zhenti-list" id="zhenti-list"></ul>
     </div>
 
     <!-- 错题本页面 -->
     <div id="page-wrong" class="page">
-        <button class="btn btn-outline" id="wrong-practice-all-btn" onclick="startWrongPractice()" style="display:none; margin-bottom:16px;">📝 练习全部错题</button>
         <div id="wrong-list-container"></div>
+    </div>
+
+    <!-- 统计页面 -->
+    <div id="page-stats" class="page">
+        <div class="stats-card">
+            <div class="stats-title">学习进度概览</div>
+            <div class="stats-chart">
+                <div class="chart-bar" id="chart-ch3" style="height: 0;"><span>财务</span></div>
+                <div class="chart-bar" id="chart-ch4" style="height: 0;"><span>装修</span></div>
+                <div class="chart-bar" id="chart-ch5a" style="height: 0;"><span>保洁</span></div>
+                <div class="chart-bar" id="chart-ch5b" style="height: 0;"><span>绿化</span></div>
+                <div class="chart-bar" id="chart-ch6" style="height: 0;"><span>社区</span></div>
+                <div class="chart-bar" id="chart-ch7" style="height: 0;"><span>质量</span></div>
+            </div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-title">各章节正确率</div>
+            <ul class="chapter-stats" id="chapter-stats"></ul>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-title">数据管理</div>
+            <button class="btn btn-outline" onclick="clearAllData()" style="margin-top: 0;">
+                🗑️ 清除所有数据
+            </button>
+        </div>
     </div>
 
     <!-- 答题页面 -->
@@ -284,1153 +962,583 @@
             <div class="question-progress" id="question-progress">1/10</div>
             <button class="star-btn" id="star-btn" onclick="toggleStar()">☆</button>
         </div>
-        <div class="exam-progress-bar" id="exam-progress-bar">
-            <div class="exam-progress-fill" id="exam-progress-fill"></div>
-        </div>
+        
         <div class="question-content" id="question-content">
             <div class="question-type" id="question-type">简答题</div>
-            <div class="exam-score-label" id="exam-score-label">本题满分：6分</div>
-            <div class="question-context" id="question-context" style="display:none;"></div>
+            <div class="question-context" id="question-context" style="display: none;"></div>
             <div class="question-text" id="question-text"></div>
+            
             <div class="feedback" id="feedback">
                 <div class="feedback-icon" id="feedback-icon">✓</div>
                 <div class="feedback-text" id="feedback-text">正确!</div>
             </div>
+            
             <div class="input-area" id="input-area">
                 <textarea id="user-answer" placeholder="请在此输入你的答案..."></textarea>
             </div>
-            <div class="user-answer-display" id="user-answer-display"></div>
+            
             <div class="answer-section" id="answer-section">
                 <div class="answer-title">参考答案</div>
                 <div class="answer-text" id="answer-text"></div>
             </div>
-        </div>
-        <div class="btn-group" id="btn-group">
-            <button class="btn btn-primary" id="submit-btn" onclick="submitAnswer()">🤖 AI评分</button>
-            <button class="btn btn-outline" id="prev-btn" onclick="prevQuestion()" style="display:none;">上一题</button>
-            <button class="btn btn-outline" id="next-btn" onclick="nextQuestion()" style="display:none;">下一题</button>
-            <button class="btn btn-redo" id="redo-btn" onclick="redoCurrentQuestion()" style="display:none;">🔄 重做本题</button>
-        </div>
-    </div>
 
-    <!-- 考试成绩单 -->
-    <div class="exam-transcript" id="exam-transcript">
-        <div class="transcript-header">
-            <h2>📋 模拟考试成绩单</h2>
-            <div class="transcript-total" id="transcript-total">0<small>/100</small></div>
-            <div class="transcript-summary">
-                <div class="transcript-summary-item">
-                    <div class="transcript-summary-value" id="transcript-pass-count" style="color:#b7eb8f;">0</div>
-                    <div class="transcript-summary-label">及格题数</div>
+            <!-- AI评分结果 -->
+            <div class="ai-score-section" id="ai-score-section">
+                <div class="ai-score-header">🤖 AI评分结果</div>
+                <div class="ai-score-ring">
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                        <circle class="bg" cx="60" cy="60" r="52" fill="none" stroke-width="8"/>
+                        <circle class="progress" id="score-progress" cx="60" cy="60" r="52" fill="none" stroke-width="8" stroke-linecap="round" stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+                    </svg>
+                    <div class="ai-score-number" id="ai-score-number">--</div>
                 </div>
-                <div class="transcript-summary-item">
-                    <div class="transcript-summary-value" id="transcript-fail-count" style="color:#ffa39e;">0</div>
-                    <div class="transcript-summary-label">不及格题数</div>
-                </div>
-                <div class="transcript-summary-item">
-                    <div class="transcript-summary-value" id="transcript-rate">0%</div>
-                    <div class="transcript-summary-label">得分率</div>
+                <div class="ai-score-label" id="ai-score-label">等待评分</div>
+                <div class="ai-score-feedback">
+                    <div class="ai-score-feedback-title">📝 评分反馈</div>
+                    <div id="ai-score-feedback-text">-</div>
                 </div>
             </div>
+
         </div>
-        <div class="transcript-body" id="transcript-body"></div>
-        <div class="transcript-actions">
-            <button class="btn btn-primary" onclick="closeTranscript()">返回首页</button>
-            <button class="btn btn-outline" onclick="startExamPractice()">🔄 再考一次</button>
+        
+        <div class="btn-group">
+            <button class="btn btn-ai" id="ai-score-btn" onclick="aiScoreAnswer()">🤖 AI评分</button>
+            <button class="btn btn-primary" id="submit-btn" onclick="submitAnswer()">📖 查看答案</button>
+        </div>
+        <div class="btn-group" style="margin-top: 8px;">
+            <button class="btn btn-outline" id="prev-btn" onclick="prevQuestion()">← 上一题</button>
+            <button class="btn btn-outline" id="next-btn" onclick="nextQuestion()">下一题 →</button>
         </div>
     </div>
 
     <!-- 底部导航 -->
-    <div class="bottom-nav" id="bottom-nav">
-        <div class="nav-item active" onclick="showPage('home', this)">
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="showPage('home')">
             <div class="nav-icon">🏠</div>
             <div class="nav-label">首页</div>
         </div>
-        <div class="nav-item" onclick="showPage('wrong', this)">
+        <div class="nav-item" onclick="showPage('chapter')">
+            <div class="nav-icon">📚</div>
+            <div class="nav-label">章节</div>
+        </div>
+        <div class="nav-item" onclick="showPage('wrong')">
             <div class="nav-icon">📝</div>
             <div class="nav-label">错题</div>
+        </div>
+        <div class="nav-item" onclick="showPage('stats')">
+            <div class="nav-icon">📊</div>
+            <div class="nav-label">统计</div>
+        </div>
+    </div>
+
+
+    <!-- 答案浮窗 -->
+    <div class="answer-modal-overlay" id="answer-modal-overlay" onclick="closeAnswerModal(event)">
+        <div class="answer-modal" onclick="event.stopPropagation()">
+            <div class="answer-modal-header">
+                <div class="answer-modal-title">✓ 参考答案</div>
+                <button class="answer-modal-close" onclick="closeAnswerModal()">✕</button>
+            </div>
+            <div class="answer-modal-body">
+                <div class="answer-modal-answer" id="answer-modal-text"></div>
+            </div>
+            <div class="answer-modal-footer">
+                <button class="btn btn-primary" onclick="closeAnswerModal()">关闭</button>
+            </div>
         </div>
     </div>
 
     <!-- Toast -->
     <div class="toast" id="toast"></div>
-
     <script>
-        // ========== 题目数据 ==========
-const questions = [
-            // 第三章：行政综合管理
-            {
-                id: 1,
-                chapter: 'ch3',
-                chapterName: '第三章：行政综合管理',
-                type: '列举题',
-                score: 9,
-                question: '物业服务成本或物业服务支出构成一般包括哪九个部分？',
-                answer: `①人员费用
-②物业共用部位共用设施设备日常运行和维护费用
-③清洁卫生费用
-④绿化养护费用
-⑤秩序维护费用
-⑥办公费用
-⑦固定资产折旧
-⑧设施设备及公众责任保险费用
-⑨经业主同意的其他费用
-
-【备注】包干制物业费构成 = 总成本+税费+利润
-酬金制物业费构成 = 总成本+酬金`
-            },
-            {
-                id: 2,
-                chapter: 'ch3',
-                chapterName: '第三章：行政综合管理',
-                type: '简答题',
-                score: 5,
-                question: '简述日常收取物业费的工作流程（收费程序）。',
-                answer: `1) 送发交费通知单
-物业服务人员要设法将物业服务交费通知单按月(或按季度)及时送到业主或物业使用人的手中，应由业主或物业使用人签收。无法送达业主或物业使用人时，财务部应将收费通知单妥善保管，登记备案。
-
-2) 进行收费服务
-物业服务企业财务部门应按工作流程规范收交物业费。`
-            },
-            {
-                id: 3,
-                chapter: 'ch3',
-                chapterName: '第三章：行政综合管理',
-                type: '简答题',
-                score: 5,
-                question: '物业费的一般催交程序有哪些？',
-                answer: `1) 财务部门对欠费的业主进行统计，列出重点催交对象；
-2) 重新采集欠费业主的通讯记录，确定正确的联系方式；
-3) 将责任落实到每个物业服务人员，明确其负责哪些催交对象，跟踪记录，必要时进行上门收费服务；
-4) 及时电话联系或上门催交，一方面宣传物业管理的法规知识；另一方面，在加强与业主之间沟通的基础上，善于把握时机，取得业主的理解和认可。`
-            },
-            {
-                id: 4,
-                chapter: 'ch3',
-                chapterName: '第三章：行政综合管理',
-                type: '简答题',
-                score: 8,
-                question: '物业服务收费难的原因有哪些？',
-                answer: `造成物业服务收费难原因多种多样，实践中暴露出来的主要原因有：
-
-1、物业服务质量与价格不相称；
-2、开发商遗留问题连累到物业服务企业；
-3、物业服务企业非法占有业主共有财产；
-4、物业服务不规范等。
-
-由于这些问题长期得不到解决，导致物业服务企业与部分业主之间的关系非常紧张，甚至恶化，从而使物业费的收交工作变得更加艰难。`
-            },
-            {
-                id: 5,
-                chapter: 'ch3',
-                chapterName: '第三章：行政综合管理',
-                type: '列举题',
-                score: 8,
-                question: '解决物业服务收费难的问题有哪些对策？',
-                answer: `(1) 依据《民法典》和《物业管理条例》等规定，明确双方义务
-(2) 依法确立物业服务关系
-(3) 提供质价相符的物业服务
-(4) 接受业主对物业服务的监督
-(5) 进行客户关系管理
-(6) 转变业主和使用人的消费观念
-(7) 依法交纳、收取物业费
-(8) 司法部门需依法公正、公平裁决`
-            },
-            {
-                id: 6,
-                chapter: 'ch3',
-                chapterName: '第三章：行政综合管理',
-                type: '案例分析题',
-                score: 7,
-                context: `背景资料: 
-近日，A住宅小区项目管理处李经理遇到件棘手的事，5号楼1601室业主王女士因为工作原因长期居住在外地，拖欠了一年多物业费。李经理曾多次与王女士电话联系，每次王女士都表示等回家后就支付，2024年年底考核时，公司要求李经理必须在2025年1月底前收到王女士欠交的物业费。因此，李经理准备跟王女士再打个电话，正式通知她如果1月底前不来交费，就准备发律师函了。`,
-                question: '背景资料中物业费成本的构成包括哪些方面？（7分）',
-                answer: `(1) 管理服务人员的工资、社会保险和按规定提取的福利费等;(1分)
-(2) 物业共用部位、共用设施设备的日常运行、维护费用;(1分)
-(3) 物业管理区域清洁卫生费用;(1分)
-(4) 物业管理区域绿化养护费用;(1分)
-(5) 物业管理区域秩序维护费用;(1分)
-(6) 办公费用;(1分)
-(7) 物业服务企业固定资产折旧;(1分)
-(8) 物业共用部位、共用设施设备及公众责任保险费用;(1分)
-(9) 经业主同意的其他费用。(1分)
-
-【答出一项得1分，最高7分】`
-            },
+        // 题目数据
+        const questions = [
+            // 第三章：财务管理
             {
-                id: 7,
-                chapter: 'ch3',
-                chapterName: '第三章：行政综合管理',
-                type: '案例分析题',
-                score: 5,
-                context: `背景资料（同上案例）：李经理准备与业主王女士再打个电话，正式通知她如果1月底前不来交费，就准备发律师函了。`,
-                question: '如果你是该小区的物业服务人员，请简述物业费的一般催交程序有哪些？（5分）',
-                answer: `(1) 物业服务企业的相关部门对欠费的业主进行统计，列出重点催缴对象;(1分)
-(2) 采集业主的通讯记录，确定具体的联系方式;(1分)
-(3) 将责任落实到每个物业管理人员，明确其负责哪些催缴对象，跟踪记录，同时进行上门收费服务;(1分)
-(4) 进行电话联系或上门等方式催缴，做好相关宣传和服务;(1分)
-(5) 寄发书面催缴通知书并注明缴款期限。(1分)`
-            },
-            {
-                id: 8,
-                chapter: 'ch3',
-                chapterName: '第三章：行政综合管理',
-                type: '计算题',
-                score: 2,
-                question: '（计算题）实行物业服务费酬金制的，预收的物业服务费应由哪几个部分组成？',
-                answer: `实行物业服务费酬金制的，预收的物业服务费应包括：
-
-① 物业服务支出 
-② 物业服务企业的酬金`
-            },
-            {
-                id: 9,
-                chapter: 'ch3',
-                chapterName: '第三章：行政综合管理',
-                type: '计算题',
-                score: 2,
-                question: `（计算题）某住宅物业管理区域全年各项费用如下：
-(1) 各类管理服务人员工资、社会保险等：62万元
-(2) 共用部位、共用设施设备的运行维护费：24万元
-(3) 清洁卫生费：16万元
-(4) 绿化养护费：12万元
-(5) 公共秩序维护费：12万元
-(6) 办公费：6万元
-(7) 固定资产折旧：3万元
-(8) 物业共用部位、共用设施设备及公众责任保险费：3万元
-(9) 经业主大会同意的业主委员会办公费：2万元
-
-该住宅物业管理区域的物业管理全年各项总费用是多少？`,
-                answer: `计算：62 + 24 + 16 + 12 + 12 + 6 + 3 + 3 + 2 = 140万元
-
-答：该物业管理区域的物业管理全年各项总费用是140万元。`
-            },
-            {
-                id: 10,
-                chapter: 'ch3',
-                chapterName: '第三章：行政综合管理',
-                type: '计算题',
-                score: 3,
-                context: `已知条件：采用酬金制方式，约定物业管理酬金比例为10%，全年各项总费用为140万元。`,
-                question: '根据已知条件，请计算该物业管理区域的物业管理酬金是多少？',
-                answer: `计算：140万元 × 10% = 14万元
-
-答：该物业管理区域的物业管理酬金是14万元。`
-            },
-            {
-                id: 11,
-                chapter: 'ch3',
-                chapterName: '第三章：行政综合管理',
-                type: '计算题',
-                score: 3,
-                context: `已知条件：
-- 住宅总建筑面积：8万㎡
-- 全年各项总费用：140万元
-- 酬金比例：10%`,
-                question: '该住宅物业管理区域的物业服务费每月每平方米的收费标准为多少？',
-                answer: `计算过程：
-物业服务费总额 = 140万元 × (1 + 10%) = 154万元
-每平方米月标准 = 154万元 ÷ 8万㎡ ÷ 12月 = 1.60元/㎡·月
-
-答：该住宅物业管理区域的物业服务费每月每平方米的收费标准为1.60元/㎡·月。`
-            },
-
-            // 第四章：物业运维管理服务
-            {
-                id: 12,
-                chapter: 'ch4',
-                chapterName: '第四章：物业运维管理服务',
-                type: '简答题',
-                score: 5,
-                question: '何谓物业承接查验？',
-                answer: `根据《物业承接查验办法》的规定，物业承接查验是指：承接新建物业前，物业服务企业和建设单位按照国家有关规定和前期物业服务合同的约定，共同对物业共用部位、共用设施设备进行检查和验收的活动。`
-            },
-            {
-                id: 13,
-                chapter: 'ch4',
-                chapterName: '第四章：物业运维管理服务',
-                type: '简答题',
-                score: 4,
-                question: '物业承接查验分为哪几种类型？',
-                answer: `物业承接查验分为两种类型：
-
-1. 新建物业的承接查验：发生在建设单位向物业服务企业移交物业的过程中。
-
-2. 物业管理机构更迭时的承接查验：发生在业主大会或产权单位向新来的物业服务企业移交物业的过程中。`
-            },
-            {
-                id: 14,
-                chapter: 'ch4',
-                chapterName: '第四章：物业运维管理服务',
-                type: '简答题',
-                score: 5,
-                question: '新建物业承接查验的工作内容包括哪些？',
-                answer: `新建物业承接查验的工作内容主要包括二大类：
-
-(1) 物业资料查验
-(2) 物业共用部位、共用设施设备现场查验`
-            },
-            {
-                id: 15,
-                chapter: 'ch4',
-                chapterName: '第四章：物业运维管理服务',
-                type: '列举题',
-                score: 7,
-                question: '物业资料查验包括哪些内容？',
-                answer: `(1) 物业设计、施工、竣工验收的相关资料，包括：竣工图纸、资料，验收合格证及许可使用文件等；
-
-(2) 房屋清单、设施清单、设备清单、绿化清单等；
-
-(3) 产权资料，包括建设单位、物业买受人、使用人等相关资料；
-
-(4) 物业使用资料，如《物业质量保证书》、《物业使用说明书》等；
-
-(5) 物业管理资料，如物业质量保修资料、物业维修保养及主要设备及配件供应合同等；
-
-(6) 物业买卖合同和前期物业服务合同约定移交的其它资料等；
-
-(7) 其它法律法规规定的相关资料。`
-            },
-            {
-                id: 16,
-                chapter: 'ch4',
-                chapterName: '第四章：物业运维管理服务',
-                type: '列举题',
-                score: 7,
-                question: '物业共用部位、共用设施设备现场查验包括哪些内容？',
-                answer: `物业共用部位、共用设施设备现场查验共包括7项：
-
-(1) 房屋结构查验内容
-(2) 房屋装饰装修查验内容
-(3) 房屋屋面查验内容
-(4) 房屋共用设施查验内容
-(5) 室外安装查验内容
-(6) 共用设备系统查验内容
-(7) 物业服务用房查验内容`
-            },
-            {
-                id: 17,
-                chapter: 'ch4',
-                chapterName: '第四章：物业运维管理服务',
-                type: '列举题',
-                score: 6,
-                question: '新建物业承接查验的操作程序是什么？',
-                answer: `(1) 确定物业承接查验方案
-(2) 查验、移交图纸资料
-(3) 查验共用部位、共用设施设备
-(4) 解决查验发现的问题
-(5) 签订《物业承接查验协议》
-(6) 办理物业交接手续`
-            },
-            {
-                id: 18,
-                chapter: 'ch4',
-                chapterName: '第四章：物业运维管理服务',
-                type: '简答题',
-                score: 5,
-                question: '物业服务人员应如何解决新建物业承接查验过程中发现的问题？',
-                answer: `1) 书面通知建设单位及时解决，并进行复验。
-
-2) 现场查验中，物业服务企业应当将物业共用部位、共用设施设备的数量和质量不符合合同约定和有关文件规定的情形，由物业现场查验小组将查验中发现的问题分类填入《物业承接查验问题处理跟踪表》，书面通知建设单位，建设单位签收后应当及时责成责任单位解决。完成后，组织查验的双方人员进行复验，直至合格。
-
-3) 对于不能及时解决的遗留问题，应记入《物业承接查验最终遗留问题汇总表》，双方协商解决方案，并在签订《物业承接查验协议》时明确约定。`
-            },
-            {
-                id: 19,
-                chapter: 'ch4',
-                chapterName: '第四章：物业运维管理服务',
-                type: '简答题',
-                score: 6,
-                question: '请简述物业承接查验文件合规性的要求。',
-                answer: `1) 建设单位书面提请物业服务企业启动承接查验工作，在现场查验20日前，建设单位应当向物业服务企业移交相关物业查验资料。
-
-2) 按《物业承接查验办法》物业承接查验方案中的规定和具体要求，物业服务企业与建设单位共同对上述资料进行资料查验，查验结果填入《物业资料查验移交表》，由双方共同签字盖章。
-
-3) 资料查验完成后，建设单位向物业服务企业移交资料，由物业服务企业建档归档永久保存。
-
-4) 未能全部移交《物业承接查验办法》规定的资料，建设单位应当列出未移交资料的详细清单并书面承诺补交的具体时限。`
-            },
-
-            // 第五章：环境管理
-            {
-                id: 20,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '简答题',
-                score: 4,
-                question: '何谓公共安全防范管理服务？',
-                answer: `公共安全防范管理服务是物业服务企业接受业主委托，协助政府相关部门，为维护公共治安、施工安全、物业正常运行秩序等采取的一系列防范性管理服务活动。`
-            },
-            {
-                id: 21,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 5,
-                question: '公共安全防范管理的内容主要包含哪几个方面？',
-                answer: `(1) 出入管理
-(2) 物业项目公共安全秩序维护
-(3) 灾害防治
-(4) 配合政府开展社区管理
-(5) 施工现场的管理`
-            },
-            {
-                id: 22,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 5,
-                question: '配合政府开展社区管理具体内容包括哪些？',
-                answer: `(1) 重大社区活动知会辖区派出所及社区居委会；
-(2) 协助相关部门处置治安或意外事故；
-(3) 积极配合相关部门做好法律政策宣传教育；
-(4) 协助相关政府部门进行人口普查工作；
-(5) 协助辖区派出所进行暂住人口登记工作。`
-            },
-            {
-                id: 23,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '简答题',
-                score: 4,
-                question: '物业项目的施工现场如何管理？',
-                answer: `物业项目的施工现场管理应根据建设单位书面合同委托的具体要求，区分施工现场各单位的管理职责，制定相应方案，实现对人员、施工材料、设施设备、施工车辆的进出，施工区域划分分隔以及物品存放的有效管理。`
-            },
-            {
-                id: 24,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '简答题',
-                score: 5,
-                question: '你认为消防管理最为重要的事项有哪些？',
-                answer: `简单概括二件事：预防 + 灭火救援
-
-**火灾预防**：物业项目的火灾预防是消防管理工作的首要任务。
-
-**灭火救援**：当项目发生火灾时，应当立即报警，同时启动火灾应急预案，组织力量进行人员疏散及灭火扑救工作。火灾扑灭后，应当协助公安机关消防机构现场调查取证。`
-            },
-            {
-                id: 25,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 5,
-                question: '物业服务企业应重点抓好哪5件事做好火灾预防工作？',
-                answer: `1、 制定完善的消防管理制度；
-2、 认真做好物业项目的火灾隐患（危险源、危险载体）识别工作；
-3、 编制完善的火灾应急预案；
-4、 建立消防设施设备专人维护与保养制度；
-5、 同时还应积极开展物业项目范围内业主的消防安全知识宣传教育工作。`
-            },
-            {
-                id: 26,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '简答题',
-                score: 5,
-                question: '发生火灾时，物业服务企业应如何进行灭火救援？',
-                answer: `主要抓好二件事：
-
-1) 当项目发生火灾时，物业服务企业应当立即报警，同时启动火灾应急预案，组织力量进行人员疏散及灭火扑救工作，同时还应做好现场的隔离警戒及伤员救治协助工作。
-
-2) 火灾扑灭后，物业服务人员应当协助公安机关消防机构现场调查取证，按照公安机关消防机构的要求保护现场，接受事故调查，如实提供与火灾有关的情况，并对调查结果进行总结，汲取教训。`
-            },
-            {
-                id: 27,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 4,
-                question: '车辆停放管理的工作内容有哪些？',
-                answer: `主要体现在4个方面：
-
-(1) 车位规划与分配
-(2) 车辆停放管理
-(3) 停车收费管理
-(4) 停车出入管理`
-            },
-            {
-                id: 28,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '简答题',
-                score: 4,
-                question: '如何做好公共安全防范管理的出入管控？',
-                answer: `主要抓好二件事：
-(1) 来访人员登记
-(2) 作业人员出入控制`
-            },
-            {
-                id: 29,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 5,
-                question: '来访人员登记的流程是怎样的？',
-                answer: `a. 来访人员应主动进行登记；
-b. 秩序维护人员应向来访人员提供登记表格，要求其填写个人基本信息；
-c. 来访人员须如实填写姓名、证件类型、证件号码、联系方式等内容，并进行签名确认；
-d. 秩序维护人员应核对来访人员填写信息的真实性；
-e. 来访人员登记表格中应注明来访单位或场所、来访事由、预计停留时间等必要信息。`
-            },
-            {
-                id: 30,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '简答题',
-                score: 3,
-                question: '作业人员出入控制主要包括哪些？',
-                answer: `作业人员指的是装修施工、搬家、送货、送餐、送票等服务人员。
-
-对于这一类人员的出入也要按规定进行登记，按程序来操作。`
-            },
-            {
-                id: 31,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '简答题',
-                score: 3,
-                question: '什么是巡逻？',
-                answer: `巡逻是指在一定物业区域内有计划地巡回观察，以确保该区域的安全。`
-            },
-            {
-                id: 32,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 5,
-                question: '巡逻检查内容与要求有哪些？',
-                answer: `主要包括5个方面：
-
-1. 查各岗位执勤情况
-2. 巡视楼层
-3. 巡检停车场
-4. 巡逻签到
-5. 巡逻记录`
-            },
-            {
-                id: 33,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 6,
-                question: '巡视楼层的要求是什么？',
-                answer: `a. 巡楼秩序维护员乘电梯到天台，从上至下认真仔细地巡视一遍，发现不安全因素或问题应及时处理，并报告班长或项目管理处；
-
-b. 巡查电梯机房和水箱等门边暗角，发现不安全因素及时与维修人员取得联系，力争尽快处理；
-
-c. 巡查每层楼时，眼睛要多看有无异常情况，耳朵要多听有无异常响动，鼻子要多嗅有无异常气味；
-
-d. 巡逻时要仔细检查房屋本体、公共设施和消防、防盗设施是否完好无损，若有损坏或异常情况应填写故障通知单，情况严重的要立即报告班长或项目管理处；
-
-e. 仔细巡查地下室各机房重地，包括发电机房、水泵房、高低压配电房、消防控制中心等重点部位，发现不安全因素，迅速与相关值班人员取得联系，及时消除隐患；特别是台风和暴雨期间，更要加强巡查，做好应急准备工作。`
-            },
-            {
-                id: 34,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 2,
-                question: '巡检停车场的要求是什么？',
-                answer: `a. 指挥车辆慢速行驶，引导车辆停在指定车位，若发现阻塞消防通道或在非停车位有停放，应及时进行纠正；
-
-b. 在巡查车况时，若发现有未关车门、窗和漏水、漏油等情况，应及时通知车主，并上报项目管理处。`
-            },
-            {
-                id: 35,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 6,
-                question: '巡逻作业的目的是什么？',
-                answer: `主要有6个方面：
-
-1) 维护物业区域内正常的治安秩序
-2) 保护物业区域内重点区域的安全
-3) 预防灾害事故发生
-4) 协助做好物业管理区域的安全防范工作
-5) 保护灾害事故现场和犯罪现场
-6) 处置巡逻中发现的突发事件和意外事件`
-            },
-            {
-                id: 36,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '简答题',
-                score: 5,
-                question: '巡逻中发现形迹可疑人员应如何处理？',
-                answer: `1、 对于擅自进入巡逻区域内的不明身份的人员，尤其是夜间进入巡逻区域内的人员，秩序维护员要进行必要的盘查；
-
-2、 对于行为鬼鬼祟祟人员，要提高警惕，密切监视；
-
-3、 对于疑似有犯罪行为的，及时报告公安机关，协助公安机关打击违法犯罪活动，维护小区治安秩序。`
-            },
-            {
-                id: 37,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '简答题',
-                score: 4,
-                question: '如何处置巡逻中发现的突发事件？',
-                answer: `● 要有切实可行的应急处置方案；要有快速反应的应急力量；
-● 要有可靠的通信联络方法；
-● 要有平息突发事件的策略；
-● 要有劝阻、制止犯罪嫌疑人的措施。`
-            },
-            {
-                id: 38,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 3,
-                question: '如何处置意外事件？',
-                answer: `● 迅速报告，若有人员受伤，立即拨打120；
-● 保护好现场，协助相关部门的调查；
-● 积极协助做好善后工作。`
-            },
-            {
-                id: 39,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 4,
-                question: '我国道路上所用交通标志主要分为哪四类？',
-                answer: `禁令标志、警告标志、指示标志、指路标志`
-            },
-            {
-                id: 40,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 3,
-                question: '《住宅物业管理服务规范》的标识管理规范要求有哪些？',
-                answer: `1、 物业管理区域及专用作业区域内应设指示性标识。主要包括：电梯、楼梯、出入口通道、残疾人通道、门牌号等引导指示牌和功能标识。
-
-2、 物业管理区域内的紧急出口、消防通道、禁烟区、河道等设置警示性标识。
-
-3、 物业管理区域内的主要道路及停车场设施交通安全标识，主要路口设路标等指路标志。`
-            },
-            {
-                id: 41,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 6,
-                question: '常见火灾类型有哪些？请分别说明。',
-                answer: `根据可燃物的类型和燃烧特性将火灾分为A、B、C、D、E、F六类：
-
-A 类火灾：固体物质火灾
-B 类火灾：液体或可溶化固体物质火灾
-C 类火灾：气体火灾
-D 类火灾：金属火灾
-E 类火灾：物体带电燃烧的火灾
-F 类火灾：烹饪器具内的烹饪物(如动植物油脂类)火灾`
-            },
-            {
-                id: 42,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '简答题',
-                score: 4,
-                question: '消火栓的定期检查、管理有何要求？',
-                answer: `1) 每月逐个检查消火栓一次
-2) 每年逐个打开消火栓检查一次`
-            },
-            {
-                id: 43,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 3,
-                question: '每月逐个检查消火栓，主要包括哪些内容？',
-                answer: `① 消火栓箱外观检查：消火栓门关闭是否正常；锁、玻璃盖有无损坏；封条是否完好，如有脱落破损应补贴封条；
-
-② 消火栓箱内检查：消火栓内元件是否良好，有无脱落、丢失；水龙头有无渗漏；
-
-③ 随机抽取消火栓总数的10%进行测试，按消火栓报警按钮，消防监控室有无报警显示。`
-            },
-            {
-                id: 44,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 4,
-                question: '每年逐个打开消火栓检查，主要包括哪些内容？',
-                answer: `① 检查水龙带有无破损、发霉，如有应立即修补、替换、刷净晾干；
-
-② 将水龙带交换拆边或翻动一次；
-
-③ 检查水枪与水龙带接头连接是否方便牢固，如有缺损立即修复；接口垫圈是否完好，如有缺损、老化立即更换；阀杆上油保养；
-
-④ 检查修整全部支架，漆面缺失部位应重新补刷`
-            },
-            {
-                id: 45,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 8,
-                question: '如何做好灭火器的定期检查？',
-                answer: `1) 灭火器压力表指针是否在绿色区域；
-2) 检查灭火器的有效期；
-3) 灭火器喷筒是否畅通；
-4) 灭火器零部件是否完整；
-5) 灭火器可见部位防腐层是否完好；
-6) 灭火器铅封是否完好；
-7) 每半年检查一次喷嘴和喷射管有否堵塞，腐蚀损坏；
-8) 灭火器定期点检，查看压力。`
-            },
-            {
-                id: 46,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '列举题',
-                score: 5,
-                question: '员工消防培训操作程序有哪些？',
-                answer: `(1) 明确授课人，由人力资源部指派；
-(2) 选择授课地点，确定授课时间；
-(3) 明确授课内容；
-(4) 组织培训人员参加考核；
-(5) 及时总结，相关培训记录存档、备案。`
-            },
-
-            // 第六章：客户服务与公共关系维护
-            {
-                id: 47,
-                chapter: 'ch6',
-                chapterName: '第六章：客户服务与公共关系维护',
-                type: '列举题',
-                score: 5,
-                question: '在业主入住手续办理中，物业公司所要提前准备的材料有哪些？',
-                answer: `入住资料准备主要包括以下5个方面：
-
-1) 竣工验收备案表、房屋土地权属调查报告、住宅质量保证书和住宅使用说明；
-
-2) 《入住通知书》
-
-3) 《物业验收须知》
-
-4) 《客户入住房屋验收表》
-
-5) 《客户/业主/住户手册》`
-            },
-            {
-                id: 48,
-                chapter: 'ch6',
-                chapterName: '第六章：客户服务与公共关系维护',
-                type: '列举题',
-                score: 4,
-                question: '入住准备注意事项包括哪些内容？',
-                answer: `① 人力资源要充足；
-② 资料准备要充足；
-③ 在入住量较大的情况下，建议分批办理入住手续，避免因为过分集中办理而产生的混乱。同时，为降低入住工作强度，在向客户发出《入住通知书》时，应明确告知其入住办理时间、办理流程、需要准备的材料；现场应有明确标识和提示，以便对客户入住进行有效疏导和分流，确保入住工作的顺利进行；
-④ 紧急情况要有应急预案。`
-            },
-            {
-                id: 49,
-                chapter: 'ch6',
-                chapterName: '第六章：客户服务与公共关系维护',
-                type: '列举题',
-                score: 6,
-                question: '入住期间注意事项包括哪些内容？',
-                answer: `① 入住实行一站式柜台服务，方便客户办理有关入住手续；
-② 因故未能按时办理入住手续的，可按照《入住通知书》的约定另行办理；
-③ 合理安排客户入住服务办理时间，适当延长办理时间；
-④ 张贴入住公告及客户入住流程图等；
-⑤ 指定专人负责客户办理入住手续时的各类咨询和引导，以便入住工作有秩序进行；
-⑥ 注意安全保卫以及车辆引导。`
-            },
-            {
-                id: 50,
-                chapter: 'ch6',
-                chapterName: '第六章：客户服务与公共关系维护',
-                type: '列举题',
-                score: 9,
-                question: '根据《上海市住宅物业管理规定》，房屋使用及装饰装修中的相关禁止行为有哪些？',
-                answer: `禁止下列损害公共利益及他人利益的行为：
-
-（一）损坏房屋承重结构；
-（二）违法搭建建筑物、构筑物；
-（三）破坏房屋外貌；
-（四）擅自改建、占用物业共用部分；
-（五）损坏或者擅自占用、移装共用设施设备；
-（六）存放不符合安全标准的易燃、易爆、剧毒、放射性等危险性物品，或者存放、铺设超负荷物品；
-（七）排放有毒、有害物质；
-（八）发出超过规定标准的噪声；
-（九）法律、法规和规章禁止的其他行为。`
-            },
-            {
-                id: 51,
-                chapter: 'ch6',
-                chapterName: '第六章：客户服务与公共关系维护',
-                type: '简答题',
-                score: 4,
-                question: '业主、使用人装饰装修房屋时，物业服务企业应尽什么义务？',
-                answer: `业主、使用人装饰装修房屋，应当事先告知物业服务企业。
-
-物业服务企业应当将房屋装饰装修中的禁止行为和注意事项书面告知业主、使用人，并加强巡查和监督。`
-            },
-            {
-                id: 52,
-                chapter: 'ch6',
-                chapterName: '第六章：客户服务与公共关系维护',
-                type: '简答题',
-                score: 4,
-                question: '综合管理基本服务对装修管理有何要求？',
-                answer: `制定小区房屋装修申请、审批、巡视、验收等装修管理制度，建立业主或使用人房屋装修档案，装修所产生的噪音应符合相关的要求，对不符合规定的行为、现象及时劝阻、制止或报告。`
-            },
-            {
-                id: 53,
-                chapter: 'ch6',
-                chapterName: '第六章：客户服务与公共关系维护',
-                type: '简答题',
-                score: 5,
-                question: '从客户服务的角度，装修管理中如果出现《上海市住宅物业管理规定》的禁止行为，你认为应当如何处理？',
-                answer: `第五十三条规定（物业企业有巡查制止义务）：
-
-物业服务企业发现业主、使用人在物业使用、装饰装修过程中有违反国家和本市有关规定以及临时管理规约、管理规约行为的，应当予以劝阻、制止；劝阻、制止无效的，应当在二十四小时内报告业主委员会和有关行政管理部门。`
-            },
-
-            // 第八章：风险管理
-            {
-                id: 54,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 4,
-                question: '物业管理风险按物业服务内容划分，可以分为哪4种类型？',
-                answer: `(1) 秩序维护服务风险
-(2) 保洁服务风险
-(3) 绿化服务风险
-(4) 工程和维修保养服务风险`
-            },
-            {
-                id: 55,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 4,
-                question: '按物业管理的不同阶段，可以将物业管理风险划分为哪四个阶段？',
-                answer: `(1) 早期介入风险
-(2) 前期物业管理风险
-(3) 日常物业管理风险
-(4) 移交阶段物业管理风险`
-            },
-            {
-                id: 56,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 2,
-                question: '早期介入的风险主要有哪些？',
-                answer: `(1) 项目接管的不确定性带来的风险
-(2) 专业服务咨询的风险`
-            },
-            {
-                id: 57,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 3,
-                question: '前期物业管理的主要风险（合同风险）具体包括哪三个方面？',
-                answer: `(1) 合同期限风险
-(2) 合同订立的风险
-(3) 合同执行的风险`
-            },
-            {
-                id: 58,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '简答题',
-                score: 4,
-                question: '日常物业管理的风险主要包括哪两个方面？',
-                answer: `日常物业管理的风险，也称正常期物业管理风险，主要包括两个方面：
-
-一是业主或物业使用人在使用物业和接受物业服务过程中存在的风险；
-
-二是物业管理日常运作过程中存在的风险。`
-            },
-            {
-                id: 59,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 6,
-                question: '物业管理日常运作过程中存在的风险（6种）？',
-                answer: `(1) 物业费收缴风险
-(2) 替公用事业费用代收代缴费用存在的风险
-(3) 管理项目外包存在的风险
-(4) 物业服务员工服务存在的风险
-(5) 公共媒体在宣传报道中的舆论风险
-(6) 公用、共用设施设备风险，包括消防风险等`
-            },
-            {
-                id: 60,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 3,
-                question: '业主使用物业、接受服务中发生的风险主要包括哪三个方面？',
-                answer: `(1) 物业违规装饰装修带来的风险
-(2) 物业使用带来的风险
-(3) 法律概念不清导致的风险`
-            },
-            {
-                id: 61,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 5,
-                question: '移交阶段——物业现场移交的风险主要包括哪5种类型？',
-                answer: `(1) 交接主体问题
-(2) 财物清算问题
-(3) 责任履行问题
-(4) 交接确认问题
-(5) 物业服务企业自身的问题`
-            },
-            {
-                id: 62,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 3,
-                question: '物业服务场景主要的风险源来自哪三类危险源？',
-                answer: `物业服务场景主要的风险源来自职业安全类危险源，共有三类：
-
-(1) 清洁、绿化服务类危险源
-(2) 公共秩序维修、车辆管理类危险源
-(3) 工程维修服务类危险源`
-            },
-            {
-                id: 63,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 4,
-                question: '公共秩序维修类有何危险源？',
-                answer: `主要包括4类：
-
-① 使用防卫武器时，伤及他人或自己；
-② 进行意外抢险工作时的身体伤害，如灭火、制止罪犯等；
-③ 使用巡逻车辆时，可能有被车辆撞击、擦碰等意外伤害；
-④ 车场岗位，夜间未穿着反光衣等造成的伤害。`
-            },
-            {
-                id: 64,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 6,
-                question: '停车场设施有何危险隐患？',
-                answer: `共有6类：
-
-① 道闸失灵、误操作；
-② 出入口活动地桩没有设置或没有投入使用，地桩上无反光条、反光漆、地桩强度不够；
-③ 车场周边没有防止强撞装置和没有形成闭环；
-④ 交通设施(反光镜、减速坡等)设置数量不够或不合理；
-⑤ 车库上端管道滴水；
-⑥ 车库排水不畅、渗水造成路面湿滑等。`
-            },
-            {
-                id: 65,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 3,
-                question: '车辆交通标识有何隐患风险？',
-                answer: `共有3类：
-
-① 路口配置禁停、限速、限高、导向、分道行驶、人车分行等标志不清晰、有缺失等现象；
-② 反光标识不明显，有障碍物阻挡；
-③ 车辆流向设置不合理性等。`
-            },
-            {
-                id: 66,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 4,
-                question: '物业风险应对的方法有哪4种？',
-                answer: `(1) 风险规避
-(2) 风险转移
-(3) 风险减轻
-(4) 风险接受`
-            },
-            {
-                id: 67,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 5,
-                question: '物业管理风险的应对措施有哪些？',
-                answer: `(1) 树立全员风险管理意识
-(2) 建立全面的风险管控体系
-(3) 加强财务管理
-(4) 优化人力资源
-(5) 加强信息化建设`
-            },
-            {
-                id: 68,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 4,
-                question: '应急演练的实施步骤有哪些？',
-                answer: `(1) 制定演练方案；
-(2) 演练准备（人员、资金、物资、技术、安全等准备）；
-(3) 演练实施（包括演练动员、演练执行、演练结束）；
-(4) 演练总结和改进。`
-            },
-            {
-                id: 69,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 6,
-                question: '突发事件应急处置的内容主要包括哪6个方面？',
-                answer: `主要包括6个方面：
-
-(1) 人员疏散，设置警戒线
-(2) 现场交通以及秩序维护
-(3) 应急救援队伍的组织与协调
-(4) 应急物资设备的调剂
-(5) 社会救援力量联动
-(6) 消息和新闻媒介的现场管理`
-            },
-            {
-                id: 70,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '列举题',
-                score: 8,
-                question: '按相关标准，需要配置哪些应急物资？',
-                answer: `主要包括：事故或险情发生后的即时处置、报警、逃生、避险、隔险、自救、通信、救援等方面的设施、设备、装置、工具、器材和材料等，并建立应急物资管理制度。`
+                id: 1, chapter: 'ch3', chapterName: '第三章：财务管理',
+                type: '简答题', score: 3,
+                question: '什么是物业服务费（物业费）？',
+                answer: `物业服务企业按照物业服务合同的约定，对房屋及配套的设施设备和相关场地进行维修、养护、管理，维护相关区域内的环境卫生和秩序，向业主收取的费用。`
+            },
+            {
+                id: 2, chapter: 'ch3', chapterName: '第三章：财务管理',
+                type: '简答题', score: 2,
+                question: '物业服务费的计费方式有哪两种？',
+                answer: `包干制 和 酬金制。`
+            },
+            {
+                id: 3, chapter: 'ch3', chapterName: '第三章：财务管理',
+                type: '简答题', score: 4,
+                question: '什么是包干制？费用构成？适用范围？',
+                answer: `包干制是指由业主向物业服务企业支付固定物业费用，盈余或亏损均由物业服务企业享有或承担的计费方式。\n费用构成 = 物业服务成本 + 法定税费 + 物业服务企业的利润（口诀：成本+税+利润）\n适用范围：一般较多用于普通住宅小区、经济适用房。`
+            },
+            {
+                id: 4, chapter: 'ch3', chapterName: '第三章：财务管理',
+                type: '简答题', score: 4,
+                question: '什么是酬金制？费用构成？适用范围？',
+                answer: `酬金制是指在预收的物业服务资金中按约定比例或约定数额提取酬金支付给物业服务企业，其余全部用于合同约定的支出，结余或不足均由业主享有或承担的计费方式。\n费用构成 = 物业服务支出 + 物业服务企业的酬金（口诀：支出+酬金）\n适用范围：一般较多用于高档公寓、别墅、大厦。`
+            },
+            {
+                id: 5, chapter: 'ch3', chapterName: '第三章：财务管理',
+                type: '列举题', score: 9,
+                question: '物业服务成本/支出由哪9个部分构成？',
+                answer: `①人员费用（工资、社保等）\n②物业共用部位共用设施设备日常运行和维护费用\n③清洁卫生费用\n④绿化养护费用\n⑤秩序维护费用\n⑥办公费用\n⑦固定资产折旧\n⑧设施设备及公众责任保险费用\n⑨经业主同意的其他费用`
+            },
+            // 第四章：装饰装修管理
+            {
+                id: 6, chapter: 'ch4', chapterName: '第四章：装饰装修管理',
+                type: '列举题', score: 5,
+                question: '装饰装修管理的依据有哪三类？',
+                answer: `(1) 国家、部颁、行业有关的办法、标准、规范（7部）：\n  ①《住宅室内装饰装修管理办法》\n  ②《建筑工程施工质量验收统一标准》\n  ③《建筑装饰装修工程质量验收规范》\n  ④《地下防水工程质量验收规范》\n  ⑤《建筑内部装修防火施工及验收规范》\n  ⑥《建筑给排水及采暖工程质量验收规范》\n  ⑦《建筑电气工程施工质量验收规范》\n\n(2) 上海市地方性法规：《上海市住宅物业管理规定》\n\n(3) 相关合同及约定：\n  前期物业管理合同、物业管理合同、物业买卖合同\n  临时管理规约、管理规约\n  装修须知、装饰装修管理协议、用户手册`
+            },
+            {
+                id: 7, chapter: 'ch4', chapterName: '第四章：装饰装修管理',
+                type: '列举题', score: 6,
+                question: '《装饰装修管理协议》应包含哪10项内容？',
+                answer: `①住宅基本情况\n②保障周围环境、设施安全及相邻业主权益事项\n③装修施工禁止行为\n④施工人员管理\n⑤施工期限和允许施工时间\n⑥建筑垃圾和大垃圾堆放和处置方式\n⑦消防安全和施工安全\n⑧物业服务企业检查施工现场的约定\n⑨违章施工处理\n⑩违约责任及其它需要约定的事项`
+            },
+            {
+                id: 8, chapter: 'ch4', chapterName: '第四章：装饰装修管理',
+                type: '简答题', score: 3,
+                question: '装饰装修管理的基本要求？',
+                answer: `1) 装修人如需装修须提前向物业提出书面申请，提交资料和设计方案，未经批准不得施工。\n2) 施工单位应具有建筑装饰装修工程营业执照和资质证书，同时具备安全资格审查许可证。\n3) 物业有权要求更换不符合规定条件的施工单位。`
+            },
+            // 第五章：保洁管理
+            {
+                id: 9, chapter: 'ch5a', chapterName: '第五章：保洁管理',
+                type: '简答题', score: 3,
+                question: '保洁管理服务的定义？',
+                answer: `物业服务企业通过定时、定点、定人的清扫、擦拭、整理等专业性操作，以及进行垃圾的分类收集、处理和清运等日常保洁工作，维护物业管理区域所有共用部位的清洁卫生的活动。`
+            },
+            {
+                id: 10, chapter: 'ch5a', chapterName: '第五章：保洁管理',
+                type: '列举题', score: 4,
+                question: '保洁管理服务的工作内容？（8项）',
+                answer: `①楼外公共区域清洁  ②楼内公共区域清洁\n③垃圾收集与处理  ④管道疏通\n⑤外墙清洗  ⑥泳池清洁\n⑦清洁拓荒  ⑧冬季除雪除冰`
+            },
+            {
+                id: 11, chapter: 'ch5a', chapterName: '第五章：保洁管理',
+                type: '简答题', score: 2,
+                question: '楼外公共区域清洁的做法和特点？',
+                answer: `做法：以扫、捡、洗等为主。\n特点：工作相对简单、技术要求不大、跟踪清洁要求较高。`
+            },
+            {
+                id: 12, chapter: 'ch5a', chapterName: '第五章：保洁管理',
+                type: '列举题', score: 3,
+                question: '保洁管理服务的特点？（6个）',
+                answer: `①规范性  ②专业性  ③科学性\n④社会性  ⑤广泛性  ⑥经济性`
+            },
+            {
+                id: 13, chapter: 'ch5a', chapterName: '第五章：保洁管理',
+                type: '列举题', score: 3,
+                question: '清洁卫生管理制度主要包括哪些？',
+                answer: `①各岗位的岗位职责\n②各项清洁工作的工艺流程\n③各岗位的操作质量标准\n④清洁质量检查及预防、纠正机制\n⑤员工行为规范等相关规章制度\n⑥清洁绩效考核制度`
+            },
+            {
+                id: 14, chapter: 'ch5a', chapterName: '第五章：保洁管理',
+                type: '简答题', score: 2,
+                question: '清洁卫生质量管控方法？',
+                answer: `①明确不同区域保洁频次和质量标准\n②完善保洁质量考核机制\n③不同类型物业日常保洁检查重点`
+            },
+            {
+                id: 15, chapter: 'ch5a', chapterName: '第五章：保洁管理',
+                type: '简答题', score: 3,
+                question: '清洁工作日常管理的检查组成？日检覆盖范围？',
+                answer: `由日检、月检及专项抽检组成。日检应覆盖小区所有楼内外公共区域。\n主要检查部位：建筑物内外墙角、地面、天花、天台、道路、停车场、公共区域门窗、扶手、电梯、消防楼梯、楼外窨井、沟渠、垃圾桶及垃圾处理场所等。`
+            },
+            {
+                id: 16, chapter: 'ch5a', chapterName: '第五章：保洁管理',
+                type: '简答题', score: 3,
+                question: '物业清洁管理模式有哪两种？各自管控重点？',
+                answer: `①外包管理——管控重点：监督检查外包清洁公司的保洁质量，按合同考核与管理。\n②自行作业——管控重点：除监督检查保洁质量外，更注重清洁操作技术及清洁流程的管控。`
+            },
+            {
+                id: 17, chapter: 'ch5a', chapterName: '第五章：保洁管理',
+                type: '简答题', score: 4,
+                question: '高处作业安全注意事项？',
+                answer: `1) 作业人员必须身体健康，经专业培训后持证上岗，严禁酒后、过度疲劳及情绪异常时登高。\n2) 必须在合适气候环境下操作，风力过大、雨雪雾天、夜间不适合高处作业。\n3) 必须正确佩戴安全带、保护绳、安全帽，所有安全装置每次使用前全面检查。\n4) 必须有专门的安全防护及监督人员。`
+            },
+            {
+                id: 18, chapter: 'ch5a', chapterName: '第五章：保洁管理',
+                type: '简答题', score: 5,
+                question: '清洁药剂使用安全注意事项？',
+                answer: `1) 不同清洁对象做好药剂分类存放，包装须有清晰的名称、使用方法、适用对象、稀释倍数等说明。\n2) 强腐蚀性、强挥发性、易燃易爆、有毒等危险药剂，必须单独存放于危险品仓库，专人保管。\n3) 必须做好防火、防爆、防腐蚀、防中毒措施。\n4) 必须建立完善的进、出、存、销登记制度。\n5) 严格按说明书浓度配比，新药剂或新对象应先局部测试。\n6) 稀释时应将浓液往稀释液中倒，不能反过来。\n7) 使用时须戴好防护装置。\n8) 用完的容器须回收，按环保要求处理，不可随便丢弃。`
+            },
+            {
+                id: 19, chapter: 'ch5a', chapterName: '第五章：保洁管理',
+                type: '列举题', score: 2,
+                question: '垃圾分类标准？',
+                answer: `四类：①可回收物  ②有害垃圾  ③湿垃圾  ④干垃圾`
+            },
+            {
+                id: 20, chapter: 'ch5a', chapterName: '第五章：保洁管理',
+                type: '简答题', score: 3,
+                question: '分类投放管理责任人的指导和驳运责任？',
+                answer: `1) 指导责任：对投放人的分类投放行为进行指导，发现不按分类标准投放的，应要求投放人改正。\n2) 有权举报：投放人拒不改正的，可向所在地乡镇人民政府或街道办事处举报。\n3) 驳运责任：将需驳运的生活垃圾，分类驳运至生活垃圾收集运输交付点。`
+            },
+            // 第五章：绿化管理
+            {
+                id: 21, chapter: 'ch5b', chapterName: '第五章：绿化管理',
+                type: '列举题', score: 2,
+                question: '绿化管理服务的特点？',
+                answer: `3个：①经常性  ②针对性  ③动态性`
+            },
+            {
+                id: 22, chapter: 'ch5b', chapterName: '第五章：绿化管理',
+                type: '列举题', score: 3,
+                question: '绿化管理服务的内容？（6项）',
+                answer: `①绿化日常养护  ②园林绿化的翻新改造\n③绿化环境布置  ④花木种植\n⑤园林绿化灾害预防  ⑥绿化有偿服务`
+            },
+            {
+                id: 23, chapter: 'ch5b', chapterName: '第五章：绿化管理',
+                type: '列举题', score: 4,
+                question: '绿化日常养护工作包括哪8个方面？',
+                answer: `①水分管理  ②绿化保洁\n③清理残花黄叶  ④杂草防除\n⑤植物造型与修剪  ⑥园林植物施肥\n⑦园林植物病虫害防治  ⑧草坪养护`
+            },
+            {
+                id: 24, chapter: 'ch5b', chapterName: '第五章：绿化管理',
+                type: '简答题', score: 3,
+                question: '绿化管理服务的基本要求？',
+                answer: `①保证植物正常生长\n②加强对枯枝黄叶的清理及绿化保洁\n③及时对妨碍业主活动的绿化植株进行适当修剪\n④创建社区环境文化，加强绿化保护宣传`
+            },
+            {
+                id: 25, chapter: 'ch5b', chapterName: '第五章：绿化管理',
+                type: '列举题', score: 3,
+                question: '绿化管理制度包括哪些？（6项）',
+                answer: `①各岗位的岗位职责\n②各项绿化工作的标准操作流程\n③不同级别不同植物养护的质量标准\n④绿化质量检查及预防、纠正机制\n⑤员工行为规范等相关管理规章制度\n⑥绿化养护绩效考核制度`
+            },
+            {
+                id: 26, chapter: 'ch5b', chapterName: '第五章：绿化管理',
+                type: '简答题', score: 3,
+                question: '如何编制植物清册？应包括哪些内容？',
+                answer: `根据开发建设单位移交的园林建设资料及现场调研情况编制。\n内容：植物种名、数量、分布区域、植物照片、植物生长特性及养护要求等，对主要植物制作并悬挂植物铭牌。`
+            },
+            {
+                id: 27, chapter: 'ch5b', chapterName: '第五章：绿化管理',
+                type: '简答题', score: 4,
+                question: '绿化修剪的条件？养护单位应如何修剪？',
+                answer: `条件：\n①居住区内树木生长影响业主采光、通风和居住安全的\n②业主或房屋使用人提出修剪请求的\n应按《上海市居住区绿化调整技术规范》实施，文明作业。常规修剪不能解决的，可进行回缩修剪。`
+            },
+            {
+                id: 28, chapter: 'ch5b', chapterName: '第五章：绿化管理',
+                type: '简答题', score: 2,
+                question: '绿化修剪有哪两种方式？',
+                answer: `根据沪绿容〔2021〕414号文：\n①常规修剪  ②回缩修剪`
+            },
+            {
+                id: 29, chapter: 'ch5b', chapterName: '第五章：绿化管理',
+                type: '简答题', score: 4,
+                question: '常规修剪有何要求？',
+                answer: `1) 提倡由物业或专业绿化养护企业每年组织一次，修剪前应拟定方案报业委会备案。\n2) 以疏枝为主，主要修除枯枝、过密枝、重叠枝、下垂枝、病虫枝等，禁止树冠回缩短截。\n3) 居住区主干道两侧树木应以常规修剪为主，不宜采用回缩修剪。`
+            },
+            {
+                id: 30, chapter: 'ch5b', chapterName: '第五章：绿化管理',
+                type: '简答题', score: 5,
+                question: '回缩修剪有何要求？（4个）',
+                answer: `1) 不得集中大规模修剪，一次不超过拟回缩数量的1/2且不超过50棵。超50棵应分批次，间隔超6个月。\n2) 由业主向业委会（无业委会由居委会代行）提出申请，拟定回缩修剪方案。\n3) 方案应依法征询业主意见通过后，报街镇绿化管理部门备案。\n4) 街镇备案后可委托社区园艺师等方式指导具体修剪工作。`
+            },
+            {
+                id: 31, chapter: 'ch5b', chapterName: '第五章：绿化管理',
+                type: '简答题', score: 3,
+                question: '病虫害防治原则和方法？',
+                answer: `原则：贯彻\u201c预防为主\u201d和\u201c治早、治小、治了\u201d原则，对症下药，综合防治。\n防治方法4种：①栽培技术措施  ②物理防治  ③生物防治  ④化学药剂防治`
+            },
+            {
+                id: 32, chapter: 'ch5b', chapterName: '第五章：绿化管理',
+                type: '简答题', score: 3,
+                question: '绿化植物病害和虫害各分几类？',
+                answer: `病害分2类：①传染性病害  ②非传染性病害\n虫害分4类：①苗圃害虫  ②枝梢害虫  ③食叶害虫  ④蛀秆害虫`
+            },
+            {
+                id: 33, chapter: 'ch5b', chapterName: '第五章：绿化管理',
+                type: '列举题', score: 2,
+                question: '盆栽观赏植物装饰的基本方法？',
+                answer: `4种：①摆放式  ②镶嵌式  ③悬垂式  ④攀缘式`
+            },
+            // 第六章：社区文化建设
+            {
+                id: 34, chapter: 'ch6', chapterName: '第六章：社区文化建设',
+                type: '简答题', score: 2,
+                question: '什么是社区服务？',
+                answer: `指政府、社区居委会以及数字社区等其它各方面力量直接为社区居民提供的公共服务和其它物质、文化、生活等方面的服务。`
+            },
+            {
+                id: 35, chapter: 'ch6', chapterName: '第六章：社区文化建设',
+                type: '列举题', score: 3,
+                question: '社区治理的主要内容？（6项）',
+                answer: `①社区服务与社区照顾  ②社区安全与综合治理\n③社区公共卫生与疾病预防  ④社区环境及物业管理\n⑤社区文化和精神文明建设  ⑥社区社会保障与社区福利`
+            },
+            {
+                id: 36, chapter: 'ch6', chapterName: '第六章：社区文化建设',
+                type: '简答题', score: 3,
+                question: '社区治理的相关特点？',
+                answer: `①社区治理的主体多元化\n②社区治理的目标过程化\n③社区治理的内容扩大化\n④社区治理是多维度、上下互动的过程`
+            },
+            {
+                id: 37, chapter: 'ch6', chapterName: '第六章：社区文化建设',
+                type: '列举题', score: 2,
+                question: '社区治理的功能？（4个）',
+                answer: `①有助于社区经济的发展\n②有助于社区文化的繁荣\n③有助于社区环境的美化\n④有助于社区治安状况的改善`
+            },
+            {
+                id: 38, chapter: 'ch6', chapterName: '第六章：社区文化建设',
+                type: '简答题', score: 3,
+                question: '物业服务人员配合社区治理的工作内容？',
+                answer: `①配合社区政策宣传、普法教育、治安管理、卫生环保等工作\n②及时转发相关通告、公告信息\n③配合相关组织收集客户信息\n④协助相关组织办理常见业务\n（口诀：二配合、一及时、一协助）`
+            },
+            {
+                id: 39, chapter: 'ch6', chapterName: '第六章：社区文化建设',
+                type: '列举题', score: 2,
+                question: '社区文化活动要成功，需开展哪四方面工作？',
+                answer: `①开展需求调研  ②策划总体构想  ③制定活动计划  ④制定活动方案`
+            },
+            {
+                id: 40, chapter: 'ch6', chapterName: '第六章：社区文化建设',
+                type: '列举题', score: 5,
+                question: '社区文化活动方案的主要内容？',
+                answer: `①时间  ②地点  ③主题  ④形式\n⑤活动参与对象  ⑥活动邀请对象\n⑦活动组织安排  ⑧活动后勤保障\n⑨活动费用测算  ⑩活动费用来源及其它相关事宜`
+            },
+            {
+                id: 41, chapter: 'ch6', chapterName: '第六章：社区文化建设',
+                type: '列举题', score: 2,
+                question: '社区文化活动如何实施？（4方面）',
+                answer: `①组织与策划  ②实施与演出  ③社区文体活动注意事项  ④社区文化的总结工作`
+            },
+            // 第七章：质量管理
+            {
+                id: 42, chapter: 'ch7', chapterName: '第七章：质量管理',
+                type: '列举题', score: 4,
+                question: '客户服务作业规程主要包含哪7方面事项？',
+                answer: `①客户问询接待服务  ②业主入住手续办理\n③二次装修手续办理  ④特约服务接待受理\n⑤客户报修受理服务  ⑥服务费用收缴服务\n⑦客户投诉处理服务`
+            },
+            {
+                id: 43, chapter: 'ch7', chapterName: '第七章：质量管理',
+                type: '列举题', score: 3,
+                question: '物业服务企业的服务提供标准体系应包括哪5项？',
+                answer: `①服务规范  ②服务提供规范  ③服务质量控制规范\n④运行管理规范和服务评价  ⑤改进标准`
+            },
+            {
+                id: 44, chapter: 'ch7', chapterName: '第七章：质量管理',
+                type: '列举题', score: 4,
+                question: '物业服务作业规程包含的内容？（8项）',
+                answer: `①作业目的和范围  ②作业前的准备\n③职责与权限  ④作业流程\n⑤安全要求  ⑥质量标准\n⑦应急处理  ⑧作业记录和报告`
+            },
+            {
+                id: 45, chapter: 'ch7', chapterName: '第七章：质量管理',
+                type: '列举题', score: 2,
+                question: '作业规程的执行应控制哪几个环节？',
+                answer: `4个环节：①员工培训  ②严格执行  ③检查监督  ④评审与改进`
+            },
+            {
+                id: 46, chapter: 'ch7', chapterName: '第七章：质量管理',
+                type: '简答题', score: 3,
+                question: '企业应如何组织与作业规程相关的培训？',
+                answer: `1) 规范培训：发布前或上岗前，组织相关员工进行必要培训，熟悉掌握作业规程具体内容，包括目的和范围、作业准备、职责与权限、作业流程、质量标准、作业记录等。\n2) 培训考核：培训后对人员进行书面考试或实操考核，做好培训记录，确保达到预期目标和要求。`
             }
         ];
 
-
-        // ========== 真题数据 ==========
-        const questions2 = [
-            {
-                id: 71,
-                chapter: 'ch3',
-                chapterName: '第三章：行政综合管理',
-                type: '案例分析题',
-                score: 12,
-                context: `本市A住宅小区可收费建筑面积15万平方米，2023年12月甲物业服务企业与A住宅小区业主大会续签了为期三年的物业服务合同，并约定物业费采用包干制物业服务计费方式。2025年3月项目服务中心向甲物业服务企业财务部门提交了2024年物业服务费的决算报告，其中年度服务支出（成本）总额共计413万元，法定税费及企业利润合计39万元。`,
-                question: `住宅小区包干制物业服务费用计算和规范记账
-（1）请问背景资料中物业费的含义是什么？
-（2）请简述包干制的定义。如果你是A住宅小区会计，代收代付的水、电费，可否用于支付日常物业服务中的其他费用开支？
-（3）请问背景资料中包干制的物业服务费用的构成包括哪几个部分？
-（4）根据已知条件，请计算A住宅小区物业费每月每平方米收费标准是多少元？`,
-                answer: `1.物业费的含义是：指物业服务企业按照物业服务合同的约定，对房屋及配套的设施设备和相关场地进行维修、养护、管理，维护相关区域内的环境卫生和秩序，向业主收取的费用。（2分）
-2.包干制的定义：是指由业主向物业服务企业支付固定物业服务费用，盈余或者亏损均由物业服务企业享有或者承担的物业服务计费方式。（1分）不可以。（1分）
-3.包干制的物业服务费用的构成：物业服务成本（2分）；法定税费（2分）；物业服务企业的利润（2分）
-4.（413+39）÷15÷12=2.51元/㎡·月 算式正确1分、答案正确1分`
-            },
-            {
-                id: 72,
-                chapter: 'ch4',
-                chapterName: '第四章：物业运维管理服务',
-                type: '案例分析题',
-                score: 25,
-                context: `本市住宅小区，由丁物业服务企业提供前期物业服务，合同期限至2021年11月30日止。2020年下半年业主大会成立后决定重新选聘物业服务企业。经公开招标最终选聘了丙物业服务企业，并与之签订了新的《物业服务合同》。2021年11月底在小区办理物业移交手续时，丁物业服务企业直接将物业管理工作移交给丙物业服务企业，包括物业管理资料、物业共用部位、共用设施设备的查验与移交。现场的业委会成员对丁物业服务企业的做法不予认可。`,
-                question: `住宅小区档案交接
-（1）物业承接查验分哪两种类型？背景所述情况属于物业承接查验的哪种类型？
-（2）你认为丁物业服务企业上述做法对吗？为什么？
-（3）丁物业服务企业在这次物业机构更迭时移交的物业管理资料具体应该包括哪些？`,
-                answer: `1.物业承接查验分为：新建物业的承接查验（2分）；物业管理机构更迭时的承接查验两种类型（2分）。上述情况属于：物业管理机构更迭时的承接查验（2分）
-2.不对（2分）。原因：物业管理机构更迭时物业的管理移交应该是原有的物业服务企业将物业管理工作移交给物业的业主或业主委员会，再由业主或业主委员会将物业管理工作移交给新选聘的物业服务企业。虽然在具体移交中可合并进行，但要明确交接的主体、次序和责任（3分）
-3.查验和移交的物业管理资料：物业原始资料（2分）；物业共用部位、共用设施设备维修、养护和管理以及大中修、更新改造及专业检验的资料（2分）；业主资料（2分）；财务管理资料（2分）；合同协议书（2分）；人及档案材料（2分）；其他需移交的资料（2分）`
-            },
-            {
-                id: 73,
-                chapter: 'ch5',
-                chapterName: '第五章：环境管理',
-                type: '案例分析题',
-                score: 20,
-                context: `某新建小区由B物业服务企业负责管理。近期，小区内频繁出现外来人员随意进出、楼道内堆放杂物、车辆乱停乱放等问题，导致业主投诉增多，小区环境秩序混乱，引起了社区管理部门的关注，要求B物业服务企业主动作为，配合好工作。为此，B物业服务企业决定加强公共安全管理防范工作，重点解决上述问题。`,
-                question: `住宅小区公共秩序维护重点管理内容
-（1）B物业服务企业在公共安全防范管理工作中应主动配合政府开展社区管理工作，除此之外，还应关注哪些内容？
-（2）就配合政府开展社区管理工作而言，涉及的主要内容是哪些？
-（3）经调查了解，该新建小区近期频繁出现的外来人员中有一大部分是装修施工人员，在强化管理后，施工现场的进出管理除了人员以外还应关注什么？`,
-                answer: `1.除了配合政府开展社区管理工作外：出入管理（1分）；物业项目公共安全秩序维护（1分）；灾害防治（1分）；施工现场的管理（1分）
-2.配合政府开展社区管理工作：重大社区活动知会辖区派出所及社区居委会（2分）；协助相关部门处置治安或意外事故（2分）；积极配合相关部门做好法律政策宣传教育（2分）；协助相关政府部门进行人口普查工作（2分）；协助辖区派出所进行暂住人口登记工作（2分）
-3.施工现场进出管理还包括：施工材料（2分）；设施设备（2分）；施工车辆（2分）`
-            },
-            {
-                id: 74,
-                chapter: 'ch6',
-                chapterName: '第六章：客户服务与公共关系维护',
-                type: '案例分析题',
-                score: 30,
-                context: `C小区业主何先生向物业管理处杨经理来电反映，楼上居民高空抛物砸碎了自家天井内的花盆，楼上居民还经常往楼下扔牛奶盒、烟蒂等物品，虽已投诉多次，但小区物业管理处客服人员每次都没有核查就答复何先生说找不到责任人，无法处理。何先生对此十分不满，强烈要求丙物业服务企业重视服务质量、提升处理效率。`,
-                question: `住宅小区日常客户投诉处理
-（1）正确处理客户投诉是改善管理与服务、加深与客户沟通联系的机会，请问案例中小区物业管理处客服人员接到业主投诉时，应详细记录哪些内容？
-（2）为了提高服务质量，必须针对不同类型客户的需求提供相应的服务内容，提供针对性客户服务的策略一般包括处理客户的常规事务和优化服务管理两个方面，请问处理客户的常规事务和优化服务管理分别包含哪些内容？
-（3）处理客户报事报修是物业服务的一项重要工作，其服务的时效性和质量直接影响到客户对物业服务的满意度，请问案例中小区管理处客服人员在处理客户报事报修及跟进过程中需要做好哪几方面工作？`,
-                answer: `1.应详细记录：时间（1分）；地点（1分）；投诉人姓名（1分）；联系电话（1分）；所居住地（1分）；被投诉人（1分）；投诉内容（1分）；投诉人的要求（1分）；接待人（1分）；处理人等（1分）（答出一项得1分，最高8分）
-2.处理客户的常规事务：制作物业周边信息手册（2分）；建立客户资料库（2分）；定期回访调查（2分）；了解客户需求（2分）；优化服务管理：制定完善物业服务方案（2分）；调查客户满意度（2分）
-3.客户报事报修处理及跟进：做好详细、准确的记录（2分）；日常报修处理的时间安排（2分）；区分维修内容的轻重缓急（2分）；区分无偿维修与有偿维修（2分）；制定维修服务承诺（2分）；接待电话报修（2分）（答出一项得2分，最高10分）`
-            },
-            {
-                id: 75,
-                chapter: 'ch8',
-                chapterName: '第八章：风险管理',
-                type: '案例分析题',
-                score: 13,
-                context: `甲物业服务企业与建设单位签订了本市E住宅小区前期物业服务合同，合同期限自2023年1月1日至2024年12月31日止。2024年初该小区成立业主大会，不久组织物业管理公开招投标并最终选聘了乙物业服务企业，双方签订了正常期物业服务合同，该合同于2024年7月1日生效。业主委员会将选聘结果书面通知甲物业服务企业，并要求甲物业服务企业于同年6月底之前与乙物业服务公司办妥移交手续。甲物业服务企业提出异议，认为前期物业服务合同约定的期限尚未届满，且6月我国全面进入汛期，项目管理处也按应急预案针对加强了演练，此时移交存在较大风险，要求继续为小区提供物业服务至2024年12月31日，之后再办理移交手续。`,
-                question: `物业管理风险分类识别及防范
-（1）本案中业主大会与乙物业服务企业签订的物业服务合同中约定的生效日期是否符合法律法规？为什么？
-（2）本案中，从风险角度看，甲物业服务企业面临的是哪种类别的风险？按物业管理的不同阶段，物业管理风险可以划分为哪几种类别？
-（3）本案中甲物业服务企业的应急演练通常包括哪些步骤？`,
-                answer: `1.符合法律规定（1分）；原因：《中华人民共和国民法典》第九百四十条规定，业主大会与物业服务企业签订的物业服务合同生效的，前期物业服务合同终止；或《物业管理条例》第二十六条规定："期限未满、业主委员会与物业服务企业签订的物业服务合同生效的，前期物业服务合同终止"（3分）
-2.甲物业服务企业面临：前期物业管理风险（1分）；物业管理风险划分为：早期介入风险（1分）；前期物业管理风险（1分）；日常物业管理风险（1分）；移交阶段物业管理风险等（1分）
-3.应急预案演练步骤：制定演练方案（1分）；演练准备（人员、资金、物资、技术、安全等准备）（1分）；演练实施（包括演练动员、演练执行、演练结束）（1分）；演练总结和改进（1分）`
-            }
-        ];
-
-        // 真题按章节分组信息
-        const zhentiChapters = [
-            { id: 'ch3', name: '第三章：行政综合管理', icon: '💰', score: 12 },
-            { id: 'ch4', name: '第四章：物业运维管理服务', icon: '🔧', score: 25 },
-            { id: 'ch5', name: '第五章：环境管理', icon: '🌿', score: 20 },
-            { id: 'ch6', name: '第六章：客户服务与公共关系维护', icon: '👥', score: 30 },
-            { id: 'ch8', name: '第八章：风险管理', icon: '⚠️', score: 13 }
+        const chapters = [
+            { id: 'ch3', name: '第三章：财务管理', icon: '💰', score: '5题' },
+            { id: 'ch4', name: '第四章：装饰装修管理', icon: '🔨', score: '3题' },
+            { id: 'ch5a', name: '第五章：保洁管理', icon: '🧹', score: '12题' },
+            { id: 'ch5b', name: '第五章：绿化管理', icon: '🌿', score: '13题' },
+            { id: 'ch6', name: '第六章：社区文化建设', icon: '👥', score: '8题' },
+            { id: 'ch7', name: '第七章：质量管理', icon: '✅', score: '5题' }
         ];
 
 
-        // ========== 章节信息 ==========
-const chapters = [
-            { id: 'ch3', name: '第三章：行政综合管理', icon: '💰', score: '12分' },
-            { id: 'ch4', name: '第四章：物业运维管理服务', icon: '🔧', score: '25分' },
-            { id: 'ch5', name: '第五章：环境管理', icon: '🌿', score: '20分' },
-            { id: 'ch6', name: '第六章：客户服务与公共关系维护', icon: '👥', score: '30分' },
-            { id: 'ch8', name: '第八章：风险管理', icon: '⚠️', score: '13分' }
-        ];
-
-        // ========== 状态管理 ==========
+        // 状态管理
         let currentQuestionIndex = 0;
         let currentQuestions = [];
         let userAnswer = '';
         let hasSubmitted = false;
         let isStarred = false;
-        let currentMode = 'chapter'; // 'daily', 'chapter', 'wrong', 'exam'
-        let answeredMap = new Map(); // key: question.id, value: { userAnswer, score, maxScore, aiFeedback, aiCompleted }
+        let isAiScoring = false;
 
-        // 模拟考试配置
-        const EXAM_CHAPTERS = {
-            3: { count: 2, scores: [6, 6] },      // 第三章 12分
-            4: { count: 2, scores: [12, 13] },     // 第四章 25分
-            5: { count: 3, scores: [6, 6, 8] },    // 第五章 20分
-            6: { count: 3, scores: [10, 10, 10] }, // 第六章 30分
-            8: { count: 2, scores: [6, 7] }        // 第八章 13分
-        };
-        let examQuestionMaxScores = [];
-        let examScores = [];
-        let examTotalMax = 0;
+        // 初始化
+        // ========== AI评分功能（直接调Coze API） ==========
+        const COZE_BOT_ID = '7639707793037508642';
+        const COZE_PAT = 'pat_0mIoNSZLbFzfzxKH7B73ojGULZQefWyFiIbEeSmYxlmhmBTzXsiiebvcKktbF07c';
+        const COZE_API = 'https://api.coze.cn/v3/chat';
 
-        // ========== 初始化 ==========
+        // AI评分主函数
+        async function aiScoreAnswer() {
+            if (hasSubmitted || isAiScoring) return;
+            
+            const userAns = document.getElementById('user-answer').value.trim();
+            if (!userAns) {
+                showToast('请先输入答案');
+                return;
+            }
+            
+            isAiScoring = true;
+            const q = currentQuestions[currentQuestionIndex];
+            
+            // 显示加载状态
+            const aiBtn = document.getElementById('ai-score-btn');
+            aiBtn.classList.add('loading');
+            aiBtn.textContent = '🤖 评分中...';
+            document.getElementById('submit-btn').style.display = 'none';
+            
+            try {
+                // 构造发送给Bot的消息
+                const message = `题目：${q.question}\n标准答案：${q.answer}\n用户答案：${userAns}`;
+
+                // 调用Coze v3 chat API（stream模式）
+                const response = await fetch(COZE_API, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${COZE_PAT}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        bot_id: COZE_BOT_ID,
+                        user_id: 'quiz_user_' + Date.now(),
+                        stream: true,
+                        auto_save_history: false,
+                        additional_messages: [{ role: 'user', content: message, content_type: 'text' }]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API请求失败 (${response.status})`);
+                }
+
+                // 解析SSE流
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let fullContent = '';
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop(); // 保留不完整的行
+
+                    for (const line of lines) {
+                        if (line.startsWith('event:conversation.message.completed')) {
+                            // 下一行data就是完整消息
+                        } else if (line.startsWith('data:')) {
+                            const dataStr = line.slice(5).trim();
+                            if (dataStr === '"[DONE]"' || dataStr === '[DONE]') continue;
+                            try {
+                                const json = JSON.parse(dataStr);
+                                if (json.type === 'answer' && json.content) {
+                                    fullContent = json.content;
+                                }
+                            } catch (e) { /* 忽略非JSON行 */ }
+                        }
+                    }
+                }
+
+                if (!fullContent) {
+                    throw new Error('AI未返回评分内容');
+                }
+
+                // 解析评分JSON
+                let scoreData;
+                try {
+                    const jsonMatch = fullContent.match(/\{[\s\S]*?"score"[\s\S]*?"feedback"[\s\S]*?\}/);
+                    if (jsonMatch) {
+                        scoreData = JSON.parse(jsonMatch[0]);
+                    } else {
+                        scoreData = { score: 0, feedback: '无法解析评分结果：' + fullContent };
+                    }
+                } catch (e) {
+                    scoreData = { score: 0, feedback: '评分结果解析失败：' + fullContent.substring(0, 200) };
+                }
+
+                // 显示评分结果
+                displayAiScore(scoreData);
+                
+                // 不自动弹出参考答案，由用户手动点击"查看答案"按钮
+                // 保留输入框，用户可以继续修改答案重新评分
+                
+                // 保存答题记录
+                hasSubmitted = true;
+                const data2 = getData();
+                if (!data2.stats) data2.stats = {};
+                if (!data2.stats[q.id]) data2.stats[q.id] = { answered: false, correct: false };
+                data2.stats[q.id].answered = true;
+                data2.stats[q.id].correct = scoreData.score >= 60;
+                data2.stats[q.id].aiScore = scoreData.score;
+                if (typeof data2.todayAnswered === 'undefined') data2.todayAnswered = 0;
+                data2.todayAnswered++;
+                saveData(data2);
+                
+                // 显示反馈
+                document.getElementById('feedback').classList.add('show');
+                if (scoreData.score >= 80) {
+                    document.getElementById('feedback-icon').textContent = '🎉';
+                    document.getElementById('feedback-text').textContent = '回答优秀！';
+                } else if (scoreData.score >= 60) {
+                    document.getElementById('feedback-icon').textContent = '👍';
+                    document.getElementById('feedback-text').textContent = '基本正确';
+                } else {
+                    document.getElementById('feedback-icon').textContent = '💪';
+                    document.getElementById('feedback-text').textContent = '需要加强';
+                }
+                document.getElementById('feedback').className = 'feedback show';
+                
+                // 更新按钮
+                aiBtn.classList.remove('loading');
+                aiBtn.style.display = 'none';
+                
+                updateStats();
+                renderChapterList();
+                renderWrongList();
+                
+            } catch (error) {
+                console.error('AI评分失败:', error);
+                aiBtn.classList.remove('loading');
+                aiBtn.textContent = '🤖 AI评分';
+                document.getElementById('submit-btn').style.display = 'block';
+                
+                let errorMsg = 'AI评分失败';
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    errorMsg = '网络错误，请检查网络连接后重试';
+                } else {
+                    errorMsg = 'AI评分失败: ' + error.message;
+                }
+                showToast(errorMsg);
+            } finally {
+                isAiScoring = false;
+            }
+        }
+
+        // 显示AI评分结果（圆环分数+反馈）
+        function displayAiScore(scoreData) {
+            const section = document.getElementById('ai-score-section');
+            section.classList.add('show');
+
+            const score = Math.min(100, Math.max(0, Number(scoreData.score) || 0));
+
+            // 更新分数数字
+            const numberEl = document.getElementById('ai-score-number');
+            numberEl.textContent = score;
+            const cls = score >= 80 ? 'excellent' : score >= 60 ? 'good' : score >= 40 ? 'fair' : 'poor';
+            numberEl.className = 'ai-score-number ' + cls;
+
+            // 更新等级标签
+            const labelEl = document.getElementById('ai-score-label');
+            labelEl.textContent = score >= 80 ? '优秀' : score >= 60 ? '良好' : score >= 40 ? '一般' : '需加强';
+            labelEl.className = 'ai-score-label ' + cls;
+
+            // 更新圆环进度
+            const progress = document.getElementById('score-progress');
+            const circumference = 326.73;
+            const offset = circumference * (1 - score / 100);
+            progress.style.strokeDashoffset = offset;
+            progress.style.stroke = score >= 80 ? '#52c41a' : score >= 60 ? '#1890ff' : score >= 40 ? '#faad14' : '#ff4d4f';
+
+            // 更新反馈文字
+            document.getElementById('ai-score-feedback-text').textContent = scoreData.feedback || '无反馈';
+        }
+        // ========== 原有功能 ==========
+
         function init() {
             loadStats();
             renderChapterList();
@@ -1438,26 +1546,30 @@ const chapters = [
             updateStats();
         }
 
-        // ========== 数据持久化 ==========
+        // 获取本地存储数据
         function getData() {
             const data = localStorage.getItem('propertyExamData');
             return data ? JSON.parse(data) : {
                 wrongQuestions: [],
                 starredQuestions: [],
                 stats: {},
-                todayDate: new Date().toDateString(),
-                todayAnswered: 0
+                todayDate: new Date().toDateString()
             };
         }
 
+        // 保存数据
         function saveData(data) {
+            // 确保今天日期更新
             data.todayDate = new Date().toDateString();
             localStorage.setItem('propertyExamData', JSON.stringify(data));
         }
 
+        // 更新统计数据
         function loadStats() {
             const data = getData();
             const today = new Date().toDateString();
+            
+            // 如果是新的一天，重置今日数据
             if (data.todayDate !== today) {
                 data.todayDate = today;
                 data.todayAnswered = 0;
@@ -1465,903 +1577,246 @@ const chapters = [
             }
         }
 
-        // ========== 统计显示 ==========
+        // 更新显示统计
         function updateStats() {
             const data = getData();
-            const total = questions.length + questions2.length;
+            const total = questions.length;
             const allStats = data.stats || {};
+            
             let correctCount = 0;
             let totalAnswered = 0;
+            
             Object.values(allStats).forEach(q => {
                 if (q.answered) {
                     totalAnswered++;
                     if (q.correct) correctCount++;
                 }
             });
-            const rate = totalAnswered > 0 ? Math.floor((correctCount / totalAnswered) * 100) : 0;
+            
+            const rate = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
             const todayAnswered = data.todayAnswered || 0;
+            
             document.getElementById('stat-total').textContent = total;
             document.getElementById('stat-correct').textContent = correctCount;
             document.getElementById('stat-today').textContent = todayAnswered;
             document.getElementById('stat-rate').textContent = rate + '%';
         }
 
-        // ========== 章节列表渲染 ==========
+        // 渲染章节列表
         function renderChapterList() {
             const list = document.getElementById('chapter-list');
             const data = getData();
             const stats = data.stats || {};
+            
             let html = '';
             chapters.forEach(ch => {
                 const chQuestions = questions.filter(q => q.chapter === ch.id);
                 const answered = chQuestions.filter(q => stats[q.id] && stats[q.id].answered).length;
-                const total = chQuestions.length;
-                const rate = total > 0 ? Math.floor((answered / total) * 100) : 0;
-                html += '<li class="chapter-item" onclick="startChapterPractice(\'' + ch.id + '\')">'
-                    + '<div class="chapter-icon ' + ch.id + '">' + ch.icon + '</div>'
-                    + '<div class="chapter-info">'
-                    + '<div class="chapter-title">' + ch.name + '</div>'
-                    + '<div class="chapter-meta">' + total + '题 · ' + ch.score + ' · 完成' + rate + '%</div>'
-                    + '<div class="chapter-progress"><div class="chapter-progress-fill" style="width:' + rate + '%"></div></div>'
-                    + '</div>'
-                    + '<div class="chapter-arrow">›</div>'
-                    + '</li>';
+                const correct = chQuestions.filter(q => stats[q.id] && stats[q.id].correct).length;
+                
+                html += `
+                    <li class="chapter-item" onclick="startChapterPractice('${ch.id}')">
+                        <div class="chapter-icon ${ch.id}">${ch.icon}</div>
+                        <div class="chapter-info">
+                            <div class="chapter-title">${ch.name}</div>
+                            <div class="chapter-meta">${chQuestions.length}题 · ${ch.score} · 已答${answered}题</div>
+                        </div>
+                        <div class="chapter-arrow">›</div>
+                    </li>
+                `;
             });
             list.innerHTML = html;
         }
 
-        // ========== 错题列表渲染 ==========
+        // 渲染错题列表
         function renderWrongList() {
             const data = getData();
             const wrongIds = data.wrongQuestions || [];
             const container = document.getElementById('wrong-list-container');
-            const practiceAllBtn = document.getElementById('wrong-practice-all-btn');
-            if (practiceAllBtn) {
-                practiceAllBtn.style.display = wrongIds.length > 1 ? 'block' : 'none';
-            }
+            
             if (wrongIds.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div><div>暂无错题</div><div style="margin-top:8px;font-size:12px;">继续保持！</div></div>';
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">✅</div>
+                        <div>暂无错题</div>
+                        <div style="margin-top: 8px; font-size: 12px;">继续保持！</div>
+                    </div>
+                `;
                 return;
             }
+            
             const wrongQuestions = wrongIds.map(id => questions.find(q => q.id === id)).filter(Boolean);
+            
             let html = '<ul class="wrong-list">';
             wrongQuestions.forEach(q => {
-                html += '<li class="wrong-item" onclick="startWrongPractice(' + q.id + ')">'
-                    + '<div class="wrong-title">' + escHtml(q.question.substring(0, 60)) + (q.question.length > 60 ? '...' : '') + '</div>'
-                    + '<div class="wrong-meta"><span>' + q.chapterName + '</span><span>' + q.type + '</span></div>'
-                    + '</li>';
+                html += `
+                    <li class="wrong-item" onclick="startWrongPractice(${q.id})">
+                        <div class="wrong-title">${q.question.substring(0, 60)}${q.question.length > 60 ? '...' : ''}</div>
+                        <div class="wrong-meta">
+                            <span>${q.chapterName}</span>
+                            <span>${q.type}</span>
+                        </div>
+                    </li>
+                `;
             });
             html += '</ul>';
             container.innerHTML = html;
         }
 
-        function escHtml(s) {
-            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        }
-
-        // ========== 页面导航 ==========
-        function showPage(page, navEl) {
+        // 显示页面
+        function showPage(page) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
             document.getElementById('page-' + page).classList.add('active');
-            if (navEl) {
-                navEl.classList.add('active');
-            } else {
-                // 找到对应的nav item
-                var navItems = document.querySelectorAll('.nav-item');
-                navItems.forEach(function(n) {
-                    if (n.getAttribute('onclick').indexOf("'" + page + "'") > -1) {
-                        n.classList.add('active');
-                    }
-                });
-            }
-            // 刷新数据
-            if (page === 'home') {
-                updateStats();
-                renderChapterList();
-            }
-            if (page === 'wrong') {
-                renderWrongList();
+            event.currentTarget.classList.add('active');
+            
+            if (page === 'stats') {
+                updateChapterStats();
             }
         }
 
-
-        // ========== 真题模式 ==========
-        function renderZhentiList() {
-            const list = document.getElementById('zhenti-list');
-            const data = getData();
-            const stats = data.stats || {};
-            let html = '';
-            zhentiChapters.forEach(ch => {
-                const chQuestions = questions2.filter(q => q.chapter === ch.id);
-                const q = chQuestions[0]; // each chapter has 1 question in zhenti
-                if (!q) return;
-                const answered = stats[q.id] && stats[q.id].answered;
-                const correct = stats[q.id] && stats[q.id].correct;
-                html += '<li class="zhenti-item" onclick="startZhentiChapterPractice(\'' + ch.id + '\')">';
-                html += '<div class="chapter-icon ' + ch.id + '" style="background: linear-gradient(135deg, #eb2f96, #f759ab);">' + ch.icon + '</div>';
-                html += '<div class="chapter-info">';
-                html += '<div class="chapter-title">' + ch.name + '<span class="zhenti-badge">' + ch.score + '分</span></div>';
-                html += '<div class="chapter-meta">' + (answered ? (correct ? '✅ 已通过' : '❌ 未通过') : '未作答') + '</div>';
-                html += '<div class="chapter-progress"><div class="chapter-progress-fill" style="width:' + (answered ? '100' : '0') + '%; background: linear-gradient(135deg, #eb2f96, #f759ab);"></div></div>';
-                html += '</div>';
-                html += '<div class="chapter-arrow">›</div>';
-                html += '</li>';
-            });
-            list.innerHTML = html;
-        }
-
-        // 真题全部练习（按顺序，使用题目自身score作为满分）
-        function startZhentiPractice() {
-            currentMode = 'zhenti';
-            currentQuestions = [...questions2];
-            examQuestionMaxScores = questions2.map(q => q.score);
-            examScores = [];
-            examTotalMax = examQuestionMaxScores.reduce((a, b) => a + b, 0);
-            currentQuestionIndex = 0;
-            answeredMap.clear();
-            openQuestionPage();
-        }
-
-        // 真题按章节练习（单题）
-        function startZhentiChapterPractice(chapterId) {
-            currentMode = 'zhenti';
-            const chQuestions = questions2.filter(q => q.chapter === chapterId);
-            if (chQuestions.length === 0) {
-                showToast('该章节暂无真题');
-                return;
-            }
-            currentQuestions = chQuestions;
-            examQuestionMaxScores = chQuestions.map(q => q.score);
-            examScores = [];
-            examTotalMax = examQuestionMaxScores.reduce((a, b) => a + b, 0);
-            currentQuestionIndex = 0;
-            answeredMap.clear();
-            openQuestionPage();
-        }
-
-        // ========== 练习入口 ==========
-
-        // 每日刷题：随机出全部题
+        // 开始每日刷题
         function startDailyPractice() {
-            currentMode = 'daily';
             currentQuestions = [...questions].sort(() => Math.random() - 0.5);
             currentQuestionIndex = 0;
-            answeredMap.clear();
-            openQuestionPage();
+            showQuestion();
         }
 
-        // 章节练习：按顺序出题
+        // 开始章节练习
         function startChapterPractice(chapterId) {
-            currentMode = 'chapter';
-            currentQuestions = questions.filter(q => q.chapter === chapterId);
+            currentQuestions = questions.filter(q => q.chapter === chapterId).sort(() => Math.random() - 0.5);
             currentQuestionIndex = 0;
-            answeredMap.clear();
-            openQuestionPage();
+            showQuestion();
         }
 
-        // 错题练习
+        // 开始错题练习
         function startWrongPractice(questionId) {
-            currentMode = 'wrong';
             const data = getData();
             const wrongIds = data.wrongQuestions || [];
+            
             if (questionId) {
-                // 练习单题
                 currentQuestions = questions.filter(q => q.id === questionId);
             } else {
-                // 练习全部错题
                 currentQuestions = wrongIds.map(id => questions.find(q => q.id === id)).filter(Boolean);
             }
-            if (currentQuestions.length === 0) {
-                showToast('没有错题可练习');
-                return;
-            }
+            
             currentQuestionIndex = 0;
-            answeredMap.clear();
-            openQuestionPage();
-        }
-
-        // 模拟考试
-        function startExamPractice() {
-            currentMode = 'exam';
-            examQuestionMaxScores = [];
-            examScores = [];
-            examTotalMax = 0;
-            currentQuestions = [];
-            answeredMap.clear();
-
-            const chapterKeys = Object.keys(EXAM_CHAPTERS).map(Number).sort((a, b) => a - b);
-            chapterKeys.forEach(chNum => {
-                const cfg = EXAM_CHAPTERS[chNum];
-                const chId = 'ch' + chNum;
-                const chQuestions = questions.filter(q => q.chapter === chId);
-                const shuffled = [...chQuestions].sort(() => Math.random() - 0.5);
-                const selected = shuffled.slice(0, cfg.count);
-                selected.forEach((q, i) => {
-                    currentQuestions.push(q);
-                    examQuestionMaxScores.push(cfg.scores[i]);
-                });
-            });
-
-            // 全部打乱顺序
-            const combined = currentQuestions.map((q, i) => ({ q, maxScore: examQuestionMaxScores[i] }));
-            combined.sort(() => Math.random() - 0.5);
-            currentQuestions = combined.map(c => c.q);
-            examQuestionMaxScores = combined.map(c => c.maxScore);
-
-            examTotalMax = examQuestionMaxScores.reduce((a, b) => a + b, 0);
-            currentQuestionIndex = 0;
-            openQuestionPage();
-        }
-
-        // ========== 答题页面 ==========
-        function openQuestionPage() {
             showQuestion();
-            document.getElementById('question-page').classList.add('active');
         }
 
-        function closeQuestion() {
-            document.getElementById('question-page').classList.remove('active');
-            updateStats();
-            renderChapterList();
-            renderWrongList();
-        }
-
+        // 显示题目
         function showQuestion() {
             const q = currentQuestions[currentQuestionIndex];
             const total = currentQuestions.length;
             const data = getData();
-
+            
             // 更新进度
-            if (currentMode === 'exam' || currentMode === 'zhenti') {
-                var totalScoreSoFar = 0;
-                for (var si = 0; si < examScores.length; si++) totalScoreSoFar += examScores[si];
-                document.getElementById('question-progress').textContent = '第' + (currentQuestionIndex + 1) + '题/共' + total + '题 · 总分' + totalScoreSoFar + '/' + examTotalMax;
-            } else {
-                document.getElementById('question-progress').textContent = (currentQuestionIndex + 1) + '/' + total;
-            }
-
-            // 题目类型
+            document.getElementById('question-progress').textContent = `${currentQuestionIndex + 1}/${total}`;
+            
+            // 更新题目类型
             document.getElementById('question-type').textContent = q.type;
-
-            // 考试进度条和本题满分
-            var examBar = document.getElementById('exam-progress-bar');
-            var examLabel = document.getElementById('exam-score-label');
-            if (currentMode === 'exam' || currentMode === 'zhenti') {
-                examBar.classList.add('show');
-                examLabel.classList.add('show');
-                var progress = ((currentQuestionIndex + 1) / total) * 100;
-                document.getElementById('exam-progress-fill').style.width = progress + '%';
-                examLabel.textContent = '本题满分：' + examQuestionMaxScores[currentQuestionIndex] + '分';
-            } else {
-                examBar.classList.remove('show');
-                examLabel.classList.remove('show');
-            }
-
-            // 题目内容
+            
+            // 更新题目内容
             document.getElementById('question-text').textContent = q.question;
-
-            // 背景资料
-            var contextEl = document.getElementById('question-context');
+            
+            // 显示/隐藏背景资料
+            const contextEl = document.getElementById('question-context');
             if (q.context) {
                 contextEl.style.display = 'block';
                 contextEl.textContent = q.context;
             } else {
                 contextEl.style.display = 'none';
             }
-
-            // 收藏状态
+            
+            // 更新收藏状态
             isStarred = data.starredQuestions && data.starredQuestions.includes(q.id);
             updateStarBtn();
-
-            // 根据是否已答过设置UI
-            var alreadyAnswered = answeredMap.has(q.id);
-            if (alreadyAnswered) {
-                restoreAnsweredState(q);
-            } else {
-                resetToUnanswered();
-            }
-
-            // 滚到顶部
-            document.getElementById('question-content').scrollTop = 0;
-        }
-
-        // 恢复已答题状态
-        function restoreAnsweredState(q) {
-            hasSubmitted = true;
-            var info = answeredMap.get(q.id);
-            userAnswer = info.userAnswer;
-
-            // 隐藏输入框，显示用户答案
-            document.getElementById('user-answer').value = '';
-            document.getElementById('input-area').style.display = 'none';
-            var displayEl = document.getElementById('user-answer-display');
-            displayEl.textContent = userAnswer;
-            displayEl.style.display = 'block';
-
-            // 显示参考答案
-            document.getElementById('answer-text').textContent = q.answer;
-            document.getElementById('answer-section').classList.add('show');
-
-            // 显示AI评分结果
-            if (info.aiCompleted) {
-                var maxS = info.maxScore;
-                var score = info.score;
-                var fb = info.aiFeedback || '';
-                var rate = maxS > 0 ? score / maxS : 0;
-                var isPass = rate >= 0.6;
-                document.getElementById('feedback').className = 'feedback show ' + (isPass ? 'correct' : 'wrong');
-                document.getElementById('feedback-icon').textContent = isPass ? '✅' : '❌';
-                document.getElementById('feedback-text').textContent = 'AI评分：' + score + '/' + maxS + '分' + (fb ? ' · ' + fb : '');
-            } else {
-                // AI评分还未完成，显示loading
-                document.getElementById('feedback').className = 'feedback show';
-                document.getElementById('feedback-icon').innerHTML = '<div class="ai-scoring-loading"><div class="spinner"></div><p>AI评分中...</p></div>';
-                document.getElementById('feedback-text').textContent = '';
-            }
-
-            // 隐藏提交按钮
-            document.getElementById('submit-btn').style.display = 'none';
-
-            // 更新导航按钮
-            updateNavigationButtons();
-
-            // 考试模式不显示重做按钮
-            if (currentMode === 'exam') {
-                document.getElementById('redo-btn').style.display = 'none';
-            } else {
-                document.getElementById('redo-btn').style.display = 'block';
-            }
-        }
-
-        // 重置为未答题状态
-        function resetToUnanswered() {
+            
+            // 重置状态
             hasSubmitted = false;
+            isAiScoring = false;
             userAnswer = '';
-
-            // 显示输入框
-            document.getElementById('input-area').style.display = 'block';
             document.getElementById('user-answer').value = '';
-            document.getElementById('user-answer-display').style.display = 'none';
-
-            // 隐藏参考答案和反馈
+            document.getElementById('user-answer').style.display = 'block';
             document.getElementById('answer-section').classList.remove('show');
+            closeAnswerModalDirect();
             document.getElementById('feedback').classList.remove('show');
-            document.getElementById('feedback').className = 'feedback';
-
-            // 显示提交，隐藏导航
+            document.getElementById('ai-score-section').classList.remove('show');
+            
             document.getElementById('submit-btn').style.display = 'block';
-            document.getElementById('prev-btn').style.display = 'none';
-            document.getElementById('next-btn').style.display = 'none';
-            document.getElementById('redo-btn').style.display = 'none';
+            document.getElementById('ai-score-btn').style.display = 'block';
+            document.getElementById('ai-score-btn').classList.remove('loading');
+            document.getElementById('ai-score-btn').textContent = '🤖 AI评分';
+            
+            // 显示答题页面
+            document.getElementById('question-page').classList.add('active');
+            document.getElementById('question-page').classList.add('slide-in');
+            setTimeout(() => {
+                document.getElementById('question-page').classList.remove('slide-in');
+            }, 300);
         }
 
-        // ========== 提交答案（入口） ==========
+        // 答案浮窗相关函数
+        function showAnswerModal(answerText) {
+            document.getElementById('answer-modal-text').textContent = answerText;
+            document.getElementById('answer-modal-overlay').classList.add('show');
+        }
+
+        function closeAnswerModal(event) {
+            // 如果带event参数，说明是点击遮罩触发，仅当点击目标就是overlay本身时关闭
+            if (event && event.target !== document.getElementById('answer-modal-overlay')) return;
+            closeAnswerModalDirect();
+        }
+
+        function closeAnswerModalDirect() {
+            document.getElementById('answer-modal-overlay').classList.remove('show');
+        }
+
+        // 提交答案（仅查看答案）
         function submitAnswer() {
-            if (hasSubmitted) return;
-
-            var q = currentQuestions[currentQuestionIndex];
-            var userAns = document.getElementById('user-answer').value.trim();
-            if (!userAns) {
-                showToast('请先输入答案');
-                return;
-            }
-
-            hasSubmitted = true;
-            userAnswer = userAns;
-
-            if (currentMode === 'exam') {
-                submitExamAnswer(q, userAns);
-            } else if (currentMode === 'zhenti') {
-                submitZhentiAnswer(q, userAns);
-            } else {
-                submitNonExamAnswer(q, userAns);
-            }
-        }
-
-        // ========== 非考试模式提交 ==========
-        async function submitNonExamAnswer(q, userAns) {
-            var maxScore = 100; // 非考试模式100分制
-
-            // 隐藏输入框，显示用户答案
-            document.getElementById('input-area').style.display = 'none';
-            var displayEl = document.getElementById('user-answer-display');
-            displayEl.textContent = userAns;
-            displayEl.style.display = 'block';
-
-            // 隐藏提交按钮
-            document.getElementById('submit-btn').style.display = 'none';
-
-            // ★ 立即显示参考答案
-            document.getElementById('answer-text').textContent = q.answer;
-            document.getElementById('answer-section').classList.add('show');
-
-            // ★ 立即显示AI评分loading
-            document.getElementById('feedback').className = 'feedback show';
-            document.getElementById('feedback-icon').innerHTML = '<div class="ai-scoring-loading"><div class="spinner"></div><p>AI评分中...</p></div>';
-            document.getElementById('feedback-text').textContent = '';
-
-            // ★ 立即显示导航按钮和重做按钮
-            updateNavigationButtons();
-            document.getElementById('redo-btn').style.display = 'block';
-
-            // 保存答题记录（标记为已答，AI未完成）
-            answeredMap.set(q.id, { userAnswer: userAns, score: 0, maxScore: maxScore, aiFeedback: '', aiCompleted: false });
-
-            // 更新统计
-            var data = getData();
-            if (!data.stats) data.stats = {};
-            if (!data.stats[q.id]) data.stats[q.id] = { answered: false, correct: false };
-            data.stats[q.id].answered = true;
-            if (typeof data.todayAnswered === 'undefined') data.todayAnswered = 0;
-            data.todayAnswered++;
-            saveData(data);
-            updateStats();
-            renderChapterList();
-
-            // ★ 异步AI评分
-            var score = 0;
-            var aiFeedback = '';
-            try {
-                var result = await aiScoreQuestion(q, userAns, maxScore);
-                score = result.score;
-                aiFeedback = result.feedback || '';
-            } catch (e) {
-                console.error('AI评分失败:', e);
-                score = 0;
-                aiFeedback = 'AI评分失败，请参考标准答案自行评分';
-            }
-
-            // 分数钳位
-            score = Math.floor(Number(score));
-            score = Math.min(score, maxScore);
-            score = Math.max(score, 0);
-
-            var scoreRate = maxScore > 0 ? score / maxScore : 0;
-
-            // 更新答题记录（AI已完成）
-            answeredMap.set(q.id, { userAnswer: userAns, score: score, maxScore: maxScore, aiFeedback: aiFeedback, aiCompleted: true });
-
-            // 更新统计：正确判断
-            var data2 = getData();
-            data2.stats[q.id].correct = scoreRate >= 0.6;
-
-            // 得分率<60%自动加错题本
-            if (scoreRate < 0.6) {
-                if (!data2.wrongQuestions) data2.wrongQuestions = [];
-                if (!data2.wrongQuestions.includes(q.id)) {
-                    data2.wrongQuestions.push(q.id);
-                }
-            } else {
-                // 得分率>=60%，从错题本移除
-                if (data2.wrongQuestions) {
-                    var idx = data2.wrongQuestions.indexOf(q.id);
-                    if (idx > -1) data2.wrongQuestions.splice(idx, 1);
-                }
-            }
-            saveData(data2);
-
-            // ★ 更新界面上的评分结果
-            var isPass = scoreRate >= 0.6;
-            document.getElementById('feedback').className = 'feedback show ' + (isPass ? 'correct' : 'wrong');
-            document.getElementById('feedback-icon').textContent = isPass ? '✅' : '❌';
-            document.getElementById('feedback-text').textContent = 'AI评分：' + score + '/' + maxScore + '分' + (aiFeedback ? ' · ' + aiFeedback : '');
-
-            updateStats();
-            renderWrongList();
-        }
-
-        // ========== 考试模式提交 ==========
-        async function submitExamAnswer(q, userAns) {
-            var qMax = examQuestionMaxScores[currentQuestionIndex];
-
-            // 隐藏输入框，显示用户答案
-            document.getElementById('input-area').style.display = 'none';
-            var displayEl = document.getElementById('user-answer-display');
-            displayEl.textContent = userAns;
-            displayEl.style.display = 'block';
-
-            // 隐藏提交按钮
-            document.getElementById('submit-btn').style.display = 'none';
-
-            // 显示AI评分loading
-            document.getElementById('feedback').className = 'feedback show';
-            document.getElementById('feedback-icon').innerHTML = '<div class="ai-scoring-loading"><div class="spinner"></div><p>AI评分中...</p></div>';
-            document.getElementById('feedback-text').textContent = '';
-
-            // 保存到已答记录
-            answeredMap.set(q.id, { userAnswer: userAns, score: 0, maxScore: qMax, aiFeedback: '', aiCompleted: false });
-
-            // 等待AI评分
-            var score = 0;
-            var aiFeedback = '';
-            try {
-                var result = await aiScoreQuestion(q, userAns, qMax);
-                score = result.score;
-                aiFeedback = result.feedback || '';
-            } catch (e) {
-                console.error('AI评分失败:', e);
-                score = 0;
-                aiFeedback = 'AI评分失败，请参考标准答案自行评分';
-            }
-
-            // 分数钳位
-            score = Math.floor(Number(score));
-            score = Math.min(score, qMax);
-            score = Math.max(score, 0);
-
-            examScores.push(score);
-
-            // 更新已答记录
-            answeredMap.set(q.id, { userAnswer: userAns, score: score, maxScore: qMax, aiFeedback: aiFeedback, aiCompleted: true });
-
-            // 保存统计
-            var data = getData();
-            if (!data.stats) data.stats = {};
-            if (!data.stats[q.id]) data.stats[q.id] = { answered: false, correct: false };
-            data.stats[q.id].answered = true;
-            var scoreRate = qMax > 0 ? score / qMax : 0;
-            data.stats[q.id].correct = scoreRate >= 0.6;
-            if (typeof data.todayAnswered === 'undefined') data.todayAnswered = 0;
-            data.todayAnswered++;
-
-            // 得分率<60%自动加错题本
-            if (scoreRate < 0.6) {
-                if (!data.wrongQuestions) data.wrongQuestions = [];
-                if (!data.wrongQuestions.includes(q.id)) {
-                    data.wrongQuestions.push(q.id);
-                }
-            }
-            saveData(data);
-
-            // 显示参考答案
-            document.getElementById('answer-text').textContent = q.answer;
-            document.getElementById('answer-section').classList.add('show');
-
-            // 显示评分结果
-            var isPass = scoreRate >= 0.6;
-            document.getElementById('feedback').className = 'feedback show ' + (isPass ? 'correct' : 'wrong');
-            document.getElementById('feedback-icon').textContent = isPass ? '✅' : '❌';
-            document.getElementById('feedback-text').textContent = 'AI评分：' + score + '/' + qMax + '分' + (aiFeedback ? ' · ' + aiFeedback : '');
-
-            // 更新导航（考试模式：不显示上一题和重做）
-            updateNavigationButtons();
-
-            // 更新进度显示
-            var totalScoreSoFar = 0;
-            for (var si = 0; si < examScores.length; si++) totalScoreSoFar += examScores[si];
-            var totalQ = currentQuestions.length;
-            document.getElementById('question-progress').textContent = '第' + (currentQuestionIndex + 1) + '题/共' + totalQ + '题 · 总分' + totalScoreSoFar + '/' + examTotalMax;
-
-            updateStats();
-            renderChapterList();
-            renderWrongList();
-        }
-
-
-        // ========== 真题模式提交 ==========
-        async function submitZhentiAnswer(q, userAns) {
-            var qMax = examQuestionMaxScores[currentQuestionIndex];
-
-            // 隐藏输入框，显示用户答案
-            document.getElementById('input-area').style.display = 'none';
-            var displayEl = document.getElementById('user-answer-display');
-            displayEl.textContent = userAns;
-            displayEl.style.display = 'block';
-
-            // 隐藏提交按钮
-            document.getElementById('submit-btn').style.display = 'none';
-
-            // ★ 立即显示参考答案
-            document.getElementById('answer-text').textContent = q.answer;
-            document.getElementById('answer-section').classList.add('show');
-
-            // ★ 立即显示AI评分loading
-            document.getElementById('feedback').className = 'feedback show';
-            document.getElementById('feedback-icon').innerHTML = '<div class="ai-scoring-loading"><div class="spinner"></div><p>AI评分中...</p></div>';
-            document.getElementById('feedback-text').textContent = '';
-
-            // ★ 立即显示导航按钮和重做按钮
-            updateNavigationButtons();
-            document.getElementById('redo-btn').style.display = 'block';
-
-            // 保存答题记录（标记为已答，AI未完成）
-            answeredMap.set(q.id, { userAnswer: userAns, score: 0, maxScore: qMax, aiFeedback: '', aiCompleted: false });
-
-            // 更新统计
-            var data = getData();
-            if (!data.stats) data.stats = {};
-            if (!data.stats[q.id]) data.stats[q.id] = { answered: false, correct: false };
-            data.stats[q.id].answered = true;
-            if (typeof data.todayAnswered === 'undefined') data.todayAnswered = 0;
-            data.todayAnswered++;
-            saveData(data);
-            updateStats();
-
-            // ★ 异步AI评分
-            var score = 0;
-            var aiFeedback = '';
-            try {
-                var result = await aiScoreQuestion(q, userAns, qMax);
-                score = result.score;
-                aiFeedback = result.feedback || '';
-            } catch (e) {
-                console.error('AI评分失败:', e);
-                score = 0;
-                aiFeedback = 'AI评分失败，请参考标准答案自行评分';
-            }
-
-            // 分数钳位
-            score = Math.floor(Number(score));
-            score = Math.min(score, qMax);
-            score = Math.max(score, 0);
-
-            examScores.push(score);
-
-            // 更新答题记录（AI已完成）
-            answeredMap.set(q.id, { userAnswer: userAns, score: score, maxScore: qMax, aiFeedback: aiFeedback, aiCompleted: true });
-
-            // 更新统计：正确判断
-            var data2 = getData();
-            data2.stats[q.id].correct = (qMax > 0 ? score / qMax : 0) >= 0.6;
-
-            // 得分率<60%自动加错题本
-            var scoreRate = qMax > 0 ? score / qMax : 0;
-            if (scoreRate < 0.6) {
-                if (!data2.wrongQuestions) data2.wrongQuestions = [];
-                if (!data2.wrongQuestions.includes(q.id)) {
-                    data2.wrongQuestions.push(q.id);
-                }
-            } else {
-                if (data2.wrongQuestions) {
-                    var idx = data2.wrongQuestions.indexOf(q.id);
-                    if (idx > -1) data2.wrongQuestions.splice(idx, 1);
-                }
-            }
-            saveData(data2);
-
-            // ★ 更新界面上的评分结果
-            var isPass = scoreRate >= 0.6;
-            document.getElementById('feedback').className = 'feedback show ' + (isPass ? 'correct' : 'wrong');
-            document.getElementById('feedback-icon').textContent = isPass ? '✅' : '❌';
-            document.getElementById('feedback-text').textContent = 'AI评分：' + score + '/' + qMax + '分' + (aiFeedback ? ' · ' + aiFeedback : '');
-
-            // 更新进度显示
-            var totalScoreSoFar = 0;
-            for (var si = 0; si < examScores.length; si++) totalScoreSoFar += examScores[si];
-            var totalQ = currentQuestions.length;
-            document.getElementById('question-progress').textContent = '第' + (currentQuestionIndex + 1) + '题/共' + totalQ + '题 · 总分' + totalScoreSoFar + '/' + examTotalMax;
-
-            updateStats();
-            renderZhentiList();
-            renderWrongList();
-        }
-
-        // ========== AI评分 ==========
-        async function aiScoreQuestion(q, userAns, maxScore) {
-            var COZE_API = 'https://api.coze.cn/v3/chat';
-            var COZE_TOKEN = 'pat_0mIoNSZLbFzfzxKH7B73ojGULZQefWyFiIbEeSmYxlmhmBTzXsiiebvcKktbF07c';
-            var COZE_BOT_ID = '7639707793037508642';
-
-            var prompt = '你是一位物业初级考试评分老师。请根据以下信息对考生的答案进行评分。\n\n'
-                + '【题目】' + q.question + '\n'
-                + (q.context ? '【背景资料】' + q.context + '\n' : '')
-                + '【参考答案】' + q.answer + '\n'
-                + '【考生答案】' + userAns + '\n'
-                + '【本题满分】' + maxScore + '分\n\n'
-                + '评分要求：\n'
-                + '1. 严格按照' + maxScore + '分制评分，给出0到' + maxScore + '之间的整数分数\n'
-                + '2. 对比参考答案的要点，按得分点评分\n'
-                + '3. 如果考生答案涵盖大部分要点，给予较高分数；遗漏较多则扣分\n'
-                + '4. 简要说明扣分原因\n\n'
-                + '请严格按照以下JSON格式回复（不要有其他内容）：\n'
-                + '{"score": 分数, "feedback": "简要评语"}';
-
-            var response = await fetch(COZE_API, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + COZE_TOKEN
-                },
-                body: JSON.stringify({
-                    bot_id: COZE_BOT_ID,
-                    user_id: 'exam_user_' + Date.now(),
-                    stream: true,
-                    auto_save_history: false,
-                    additional_messages: [{
-                        role: 'user',
-                        content: prompt,
-                        content_type: 'text'
-                    }]
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('API请求失败: ' + response.status);
-            }
-
-            // 解析SSE流式响应
-            var content = '';
-            var reader = response.body.getReader();
-            var decoder = new TextDecoder();
-            var buffer = '';
-            while (true) {
-                var chunk = await reader.read();
-                if (chunk.done) break;
-                buffer += decoder.decode(chunk.value, { stream: true });
-                var lines = buffer.split('\n');
-                buffer = lines.pop();
-                for (var k = 0; k < lines.length; k++) {
-                    var line = lines[k].trim();
-                    if (line.startsWith('data:')) {
-                        var jsonStr = line.substring(5).trim();
-                        if (jsonStr === '[DONE]') continue;
-                        try {
-                            var event = JSON.parse(jsonStr);
-                            if (event.type === 'answer') {
-                                content += event.content || '';
-                            }
-                        } catch(e) {}
-                    }
-                }
-            }
-
-            // 尝试解析JSON
-            try {
-                var cleaned = content.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
-                var parsed = JSON.parse(cleaned);
-                return {
-                    score: parseInt(parsed.score) || 0,
-                    feedback: parsed.feedback || ''
-                };
-            } catch (parseErr) {
-                var scoreMatch = content.match(/"score"\s*:\s*(\d+)/);
-                var feedbackMatch = content.match(/"feedback"\s*:\s*"([^"]*)"/);
-                if (scoreMatch) {
-                    return {
-                        score: parseInt(scoreMatch[1]) || 0,
-                        feedback: feedbackMatch ? feedbackMatch[1] : ''
-                    };
-                }
-                throw new Error('无法解析AI评分结果: ' + content);
-            }
-        }
-
-        // ========== 导航按钮管理 ==========
-        function updateNavigationButtons() {
-            var prevBtn = document.getElementById('prev-btn');
-            var nextBtn = document.getElementById('next-btn');
-            var redoBtn = document.getElementById('redo-btn');
-
-            // 考试模式：不显示上一题和重做按钮
-            if (currentMode === 'exam') {
-                prevBtn.style.display = 'none';
-                redoBtn.style.display = 'none';
-            } else if (currentMode === 'zhenti') {
-                // 真题模式：显示上一题和重做，进度条类似考试
-                prevBtn.style.display = currentQuestionIndex > 0 ? 'block' : 'none';
-                redoBtn.style.display = 'block';
-            } else {
-                prevBtn.style.display = currentQuestionIndex > 0 ? 'block' : 'none';
-                redoBtn.style.display = 'block';
-            }
-
-            // 下一题按钮文字
-            var isLast = currentQuestionIndex >= currentQuestions.length - 1;
-            if (isLast) {
-                nextBtn.textContent = currentMode === 'exam' ? '交卷' : '完成练习';
-            } else {
-                nextBtn.textContent = '下一题';
-            }
-            nextBtn.style.display = 'block';
+            const q = currentQuestions[currentQuestionIndex];
+            
+            // 仅显示参考答案（浮窗），不锁定题目，关闭后可以继续答题
+            showAnswerModal(q.answer);
         }
 
         // 上一题
         function prevQuestion() {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                showQuestion();
+            if (currentQuestionIndex <= 0) {
+                showToast('已经是第一题了');
+                return;
             }
+            currentQuestionIndex--;
+            showQuestion();
         }
 
         // 下一题
         function nextQuestion() {
-            if (currentQuestionIndex >= currentQuestions.length - 1) {
-                // 最后一题
-                if (currentMode === 'exam') {
-                    showExamTranscript();
-                } else if (currentMode === 'zhenti') {
-                    closeQuestion();
-                    showToast('恭喜完成真题练习！');
-                } else {
-                    closeQuestion();
-                    showToast('恭喜完成练习！');
-                }
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex >= currentQuestions.length) {
+                closeQuestion();
+                showToast('恭喜完成练习！');
                 return;
             }
-            currentQuestionIndex++;
+            
             showQuestion();
         }
 
-        // 重做当前题目
-        function redoCurrentQuestion() {
-            var q = currentQuestions[currentQuestionIndex];
-            // 从已答记录中移除
-            answeredMap.delete(q.id);
-            // 重置状态
-            hasSubmitted = false;
-            userAnswer = '';
-            // 重置UI
-            resetToUnanswered();
-            showToast('已重置，请重新作答');
-        }
-
-        // ========== 考试成绩单 ==========
-        function showExamTranscript() {
-            var totalScore = 0;
-            for (var i = 0; i < examScores.length; i++) totalScore += examScores[i];
-            var scoreRate = examTotalMax > 0 ? Math.floor((totalScore / examTotalMax) * 100) : 0;
-
-            // 关闭答题页面
+        // 关闭答题页面
+        function closeQuestion() {
             document.getElementById('question-page').classList.remove('active');
-
-            // 设置总分
-            document.getElementById('transcript-total').innerHTML = totalScore + '<small>/' + examTotalMax + '</small>';
-            document.getElementById('transcript-rate').textContent = scoreRate + '%';
-
-            // 按章节遍历生成成绩单
-            var html = '';
-            var qIndex = 0;
-            var chapterKeys = Object.keys(EXAM_CHAPTERS).map(Number).sort(function(a, b) { return a - b; });
-            chapterKeys.forEach(function(chNum) {
-                var cfg = EXAM_CHAPTERS[chNum];
-                var chInfo = chapters.find(function(c) { return c.id === 'ch' + chNum; });
-                html += '<div class="transcript-chapter">';
-                html += '<div class="transcript-chapter-title">' + (chInfo ? chInfo.name : '第' + chNum + '章') + '</div>';
-                for (var i = 0; i < cfg.count; i++) {
-                    if (qIndex >= examScores.length) break;
-                    var score = examScores[qIndex];
-                    var maxS = examQuestionMaxScores[qIndex];
-                    var rate = maxS > 0 ? score / maxS : 0;
-                    var isPass = rate >= 0.6;
-                    var q = currentQuestions[qIndex];
-                    html += '<div class="transcript-item">';
-                    html += '<div class="transcript-item-index ' + (isPass ? 'pass' : 'fail') + '">' + (qIndex + 1) + '</div>';
-                    html += '<div class="transcript-item-q">' + escHtml(q.question.substring(0, 50)) + (q.question.length > 50 ? '...' : '') + '</div>';
-                    html += '<div class="transcript-item-score ' + (isPass ? 'pass' : 'fail') + '">' + score + '</div>';
-                    html += '<div class="transcript-item-max">/' + maxS + '</div>';
-                    html += '</div>';
-                    qIndex++;
-                }
-                html += '</div>';
-            });
-            document.getElementById('transcript-body').innerHTML = html;
-
-            // 统计及格/不及格题数
-            var passCount = 0, failCount = 0;
-            for (var i = 0; i < examScores.length; i++) {
-                var maxS = examQuestionMaxScores[i];
-                var rate = maxS > 0 ? examScores[i] / maxS : 0;
-                if (rate >= 0.6) passCount++;
-                else failCount++;
-            }
-            document.getElementById('transcript-pass-count').textContent = passCount;
-            document.getElementById('transcript-fail-count').textContent = failCount;
-
-            document.getElementById('exam-transcript').classList.add('show');
         }
 
-        function closeTranscript() {
-            document.getElementById('exam-transcript').classList.remove('show');
-            showPage('home');
-        }
-
-        // ========== 收藏 ==========
+        // 切换收藏
         function toggleStar() {
-            var q = currentQuestions[currentQuestionIndex];
-            var data = getData();
+            const q = currentQuestions[currentQuestionIndex];
+            const data = getData();
+            
             if (!data.starredQuestions) data.starredQuestions = [];
-            var index = data.starredQuestions.indexOf(q.id);
+            
+            const index = data.starredQuestions.indexOf(q.id);
             if (index > -1) {
                 data.starredQuestions.splice(index, 1);
                 isStarred = false;
@@ -2369,26 +1824,77 @@ const chapters = [
                 data.starredQuestions.push(q.id);
                 isStarred = true;
             }
+            
             saveData(data);
             updateStarBtn();
             showToast(isStarred ? '已收藏' : '已取消收藏');
         }
 
+        // 更新收藏按钮
         function updateStarBtn() {
-            var btn = document.getElementById('star-btn');
+            const btn = document.getElementById('star-btn');
             btn.textContent = isStarred ? '★' : '☆';
             btn.className = 'star-btn' + (isStarred ? ' starred' : '');
         }
 
-        // ========== Toast ==========
+        // 显示Toast
         function showToast(msg) {
-            var toast = document.getElementById('toast');
+            const toast = document.getElementById('toast');
             toast.textContent = msg;
             toast.classList.add('show');
-            setTimeout(function() { toast.classList.remove('show'); }, 1500);
+            setTimeout(() => toast.classList.remove('show'), 1500);
         }
 
-        // ========== 初始化 ==========
+        // 更新章节统计
+        function updateChapterStats() {
+            const data = getData();
+            const stats = data.stats || {};
+            const container = document.getElementById('chapter-stats');
+            
+            let html = '';
+            chapters.forEach(ch => {
+                const chQuestions = questions.filter(q => q.chapter === ch.id);
+                const answered = chQuestions.filter(q => stats[q.id] && stats[q.id].answered).length;
+                const correct = chQuestions.filter(q => stats[q.id] && stats[q.id].correct).length;
+                const rate = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+                
+                html += `
+                    <li class="chapter-stat-item">
+                        <div class="chapter-stat-name">${ch.name}</div>
+                        <div class="chapter-stat-bar">
+                            <div class="chapter-stat-fill" style="width: ${rate}%"></div>
+                        </div>
+                        <div class="chapter-stat-percent">${answered}/${chQuestions.length} (${rate}%)</div>
+                    </li>
+                `;
+            });
+            container.innerHTML = html;
+            
+            // 更新柱状图
+            const maxAnswered = Math.max(...chapters.map(ch => {
+                return questions.filter(q => q.chapter === ch.id).filter(q => stats[q.id] && stats[q.id].answered).length;
+            }), 1);
+            
+            chapters.forEach(ch => {
+                const chQuestions = questions.filter(q => q.chapter === ch.id);
+                const answered = chQuestions.filter(q => stats[q.id] && stats[q.id].answered).length;
+                const height = (answered / maxAnswered) * 120;
+                document.getElementById('chart-' + ch.id).style.height = Math.max(height, 10) + 'px';
+            });
+        }
+
+        // 清除所有数据
+        function clearAllData() {
+            if (confirm('确定要清除所有数据吗？这将重置所有答题记录和统计。')) {
+                localStorage.removeItem('propertyExamData');
+                updateStats();
+                renderChapterList();
+                renderWrongList();
+                showToast('数据已清除');
+            }
+        }
+
+        // 初始化应用
         init();
     </script>
 </body>
